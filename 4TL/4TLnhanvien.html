@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>4TL - Hệ thống cửa hàng tiện lợi</title>
+	<style>
+		:root {
+			--primary: #2563eb;
+			--primary-dark: #1d4ed8;
+			--accent: #f97316;
+			--bg: #f3f4f6;
+			--bg-soft: #e5e7eb;
+			--card: #ffffff;
+			--border: #d1d5db;
+			--text: #111827;
+			--text-soft: #6b7280;
+			--danger: #b91c1c;
+			--success: #16a34a;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			background: radial-gradient(circle at top, #e5f0ff 0, #f9fafb 45%, #f3f4f6 100%);
+			color: var(--text);
+			min-height: 100vh;
+		}
+
+		.app-shell {
+			display: grid;
+			grid-template-columns: 260px 1fr;
+			min-height: 100vh;
+		}
+
+		.sidebar {
+			background: linear-gradient(180deg, #ffffff, #f9fafb 55%, #e5e7eb);
+			border-right: 1px solid var(--border);
+			padding: 20px 18px;
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.brand-logo {
+			width: 40px;
+			height: 40px;
+			border-radius: 999px;
+			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+			color: #f9fafb;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+			font-size: 16px;
+			letter-spacing: 0.5px;
+			box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
+		}
+
+		.brand-text {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.brand-title {
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			font-size: 13px;
+		}
+
+		.brand-subtitle {
+			font-size: 11px;
+			color: var(--text-soft);
+		}
+
+		.sidebar-section-title {
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.14em;
+			color: var(--text-soft);
+			margin: 4px 4px 6px;
+		}
+
+		.nav {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		.nav-button {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			width: 100%;
+			border: none;
+			border-radius: 9px;
+			padding: 9px 10px;
+			background: transparent;
+			color: var(--text-soft);
+			font-size: 13px;
+			cursor: pointer;
+			text-align: left;
+			transition: all 0.15s ease-out;
+		}
+
+		.nav-button span.icon {
+			width: 24px;
+			height: 24px;
+			border-radius: 8px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+			border: 1px solid #bfdbfe;
+			font-size: 15px;
+			color: #1e293b;
+		}
+
+		.nav-button.active {
+			background: radial-gradient(circle at top left, #dbeafe, #eff6ff);
+			color: #111827;
+		}
+
+		.nav-button.active span.icon {
+			border-color: #2563eb;
+			background: linear-gradient(135deg, #2563eb, #4f46e5);
+			color: #f9fafb;
+		}
+
+		.nav-button:hover:not(.active) {
+			background: #eff6ff;
+			color: #111827;
+		}
+
+		.nav-button-label {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.nav-primary {
+			font-size: 13px;
+			font-weight: 500;
+		}
+
+		.nav-secondary {
+			font-size: 11px;
+			color: var(--text-soft);
+		}
+
+		.sidebar-footer {
+			margin-top: auto;
+			font-size: 11px;
+			color: var(--text-soft);
+			border-top: 1px solid var(--border);
+			padding-top: 12px;
+		}
+
+		.sidebar-footer strong {
+			color: #e5e7eb;
+		}
+
+		.main {
+			padding: 16px 18px 22px;
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+		}
+
+		.topbar {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.topbar-title {
+			font-size: 18px;
+			font-weight: 600;
+		}
+
+		.topbar-badge {
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.16em;
+			padding: 3px 8px;
+			border-radius: 999px;
+			border: 1px solid rgba(148, 163, 184, 0.5);
+			color: var(--text-soft);
+		}
+
+		.topbar-spacer {
+			flex: 1;
+		}
+
+		.topbar-info {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 12px;
+			color: var(--text-soft);
+		}
+
+		.pill {
+			border-radius: 999px;
+			padding: 3px 10px;
+			border: 1px solid var(--border);
+		}
+
+		.pill.primary {
+			border-color: rgba(59, 130, 246, 0.7);
+			color: #bfdbfe;
+		}
+
+		.pill {
+			border-radius: 999px;
+			padding: 3px 10px;
+			border: 1px solid var(--border);
+		}
+
+		.content {
+			margin-top: 2px;
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+		}
+
+		.grid-3 {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.grid-2 {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.card {
+			background: radial-gradient(circle at top left, #e0f2fe 0, #ffffff 55%, #f9fafb 100%);
+			border-radius: 14px;
+			border: 1px solid var(--border);
+			padding: 12px 13px 11px;
+			box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+		}
+
+		.card-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 8px;
+		}
+
+		.card-title {
+			font-size: 13px;
+			font-weight: 600;
+		}
+
+		.card-subtitle {
+			font-size: 11px;
+			color: var(--text-soft);
+		}
+
+		.tag {
+			border-radius: 999px;
+			padding: 3px 8px;
+			font-size: 10px;
+			border: 1px solid rgba(148, 163, 184, 0.6);
+			color: var(--text-soft);
+		}
+
+		.tag.success {
+			border-color: rgba(34, 197, 94, 0.8);
+			color: #bbf7d0;
+		}
+
+		.tag.danger {
+			border-color: rgba(248, 113, 113, 0.9);
+			color: #fecaca;
+		}
+
+		.kpi-value {
+			font-size: 20px;
+			font-weight: 600;
+			margin-bottom: 2px;
+		}
+
+		.kpi-label {
+			font-size: 11px;
+			color: var(--text-soft);
+		}
+
+		.kpi-trend {
+			font-size: 11px;
+			margin-top: 4px;
+		}
+
+		.kpi-trend.up {
+			color: var(--success);
+		}
+
+		.kpi-trend.down {
+			color: var(--danger);
+		}
+
+		.table-wrapper {
+			border-radius: 11px;
+			border: 1px solid var(--border);
+			overflow: hidden;
+			background: #ffffff;
+		}
+
+		.table-action {
+			font-size: 11px;
+			color: var(--danger);
+			cursor: pointer;
+			white-space: nowrap;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 12px;
+		}
+
+		thead {
+			background: #f3f4f6;
+		}
+
+		th, td {
+			padding: 7px 8px;
+			text-align: left;
+		}
+
+		th {
+			font-weight: 500;
+			color: var(--text-soft);
+			border-bottom: 1px solid var(--border);
+		}
+
+		tbody tr:nth-child(even) {
+			background: #f9fafb;
+		}
+
+		tbody tr:hover {
+			background: #dbeafe;
+		}
+
+		.status-pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+			border-radius: 999px;
+			padding: 2px 7px;
+			font-size: 10px;
+		}
+
+		.status-pill.success {
+			background: #dcfce7;
+			color: #166534;
+		}
+
+		.status-pill.warning {
+			background: #fef3c7;
+			color: #92400e;
+		}
+
+		.status-pill.danger {
+			background: #fee2e2;
+			color: #b91c1c;
+		}
+
+		.form-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px 10px;
+			margin-top: 6px;
+		}
+
+		.form-field {
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+			font-size: 12px;
+		}
+
+		label {
+			color: var(--text-soft);
+			font-size: 11px;
+		}
+
+		input, select {
+			background: #f9fafb;
+			border-radius: 7px;
+			border: 1px solid var(--border);
+			padding: 5px 7px;
+			color: var(--text);
+			font-size: 12px;
+		}
+
+		input:focus, select:focus {
+			outline: 1px solid rgba(59, 130, 246, 0.8);
+			border-color: rgba(59, 130, 246, 0.8);
+		}
+
+		.btn-row {
+			margin-top: 10px;
+			display: flex;
+			gap: 8px;
+		}
+
+		.btn {
+			border-radius: 999px;
+			border: 1px solid transparent;
+			padding: 6px 14px;
+			font-size: 12px;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+			border-color: rgba(59, 130, 246, 0.9);
+			color: #e5e7eb;
+		}
+
+		.btn-secondary {
+			background: #e5e7eb;
+			border-color: #d1d5db;
+			color: #111827;
+		}
+
+		.btn-danger {
+			background: rgba(248, 113, 113, 0.12);
+			border-color: rgba(248, 113, 113, 0.8);
+			color: #fecaca;
+		}
+
+		.btn-logout {
+			width: 100%;
+			justify-content: center;
+			background: linear-gradient(135deg, #dc2626, #b91c1c);
+			border-color: rgba(239, 68, 68, 0.9);
+			color: #fee2e2;
+		}
+
+		.badge {
+			font-size: 10px;
+			border-radius: 999px;
+			padding: 2px 6px;
+			background: #e5e7eb;
+			border: 1px solid rgba(148, 163, 184, 0.7);
+			color: #374151;
+		}
+
+		.section {
+			display: none;
+		}
+
+		.section.active {
+			display: block;
+		}
+
+		.hint-text {
+			font-size: 11px;
+			color: var(--text-soft);
+			margin-top: 6px;
+		}
+
+		.chips-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 5px;
+			margin-top: 6px;
+		}
+
+		.chip {
+			border-radius: 999px;
+			padding: 3px 8px;
+			font-size: 11px;
+			background: #eef2ff;
+			border: 1px solid rgba(129, 140, 248, 0.7);
+			color: #1e293b;
+		}
+
+		.chip.primary {
+			border-color: rgba(59, 130, 246, 0.9);
+			color: #bfdbfe;
+		}
+
+		@media (max-width: 960px) {
+			.app-shell {
+				grid-template-columns: 1fr;
+			}
+
+			.sidebar {
+				flex-direction: row;
+				overflow-x: auto;
+				padding-bottom: 10px;
+				border-right: none;
+				border-bottom: 1px solid var(--border);
+			}
+
+			.sidebar-section-title,
+			.sidebar-footer {
+				display: none;
+			}
+
+			.nav-button {
+				min-width: 180px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar">
+			<div class="brand">
+				<div class="brand-logo">4TL</div>
+				<div class="brand-text">
+					<span class="brand-title">Convenience Store</span>
+				</div>
+			</div>
+
+			<div>
+				<div class="sidebar-section-title">Chức năng chính</div>
+				<nav class="nav">
+					<button class="nav-button active" data-target="dashboard">
+						<span class="icon">🏪</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Tổng quan cửa hàng</span>
+							<span class="nav-secondary">KPI, ca bán, cảnh báo tồn kho</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="sales">
+						<span class="icon">💳</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Bán hàng & thanh toán</span>
+							<span class="nav-secondary">Hóa đơn, giỏ hàng, khách hàng</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="inventory">
+						<span class="icon">📦</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Quản lý kho</span>
+							<span class="nav-secondary">Tồn kho, điều chuyển, kiểm kê</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="import">
+						<span class="icon">🚚</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Nhập hàng</span>
+							<span class="nav-secondary">Đặt hàng, phiếu nhập, nhà cung cấp</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="supplier">
+						<span class="icon">🏭</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Quản lý nhà cung cấp</span>
+							<span class="nav-secondary">Thông tin NCC, hợp đồng, công nợ</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="customer">
+						<span class="icon">🎫</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Quản lý khách hàng thân thiết</span>
+							<span class="nav-secondary">Khách hàng, điểm, hạng thẻ</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="report">
+						<span class="icon">📊</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Báo cáo & thống kê</span>
+							<span class="nav-secondary">Doanh thu, lợi nhuận, top hàng bán</span>
+						</span>
+					</button>
+					<button class="nav-button" data-target="hr">
+						<span class="icon">👥</span>
+						<span class="nav-button-label">
+							<span class="nav-primary">Quản lý nhân sự</span>
+							<span class="nav-secondary">Nhân viên, ca làm, phân quyền</span>
+						</span>
+					</button>
+				</nav>
+			</div>
+
+			<div class="sidebar-footer">
+				<button class="btn btn-logout" onclick="window.location.href='dangnhap.html'">Đăng xuất</button>
+			</div>
+		</aside>
+
+		<main class="main">
+			<header class="topbar">
+				<div>
+					<div class="topbar-title" id="current-section-title">Tổng quan cửa hàng</div>
+					<div class="topbar-badge">4TL Convenience Store</div>
+				</div>
+				<div class="topbar-spacer"></div>
+				<div class="topbar-info">
+					<span class="pill">Nhân viên: NV001 - Nguyễn Đức Tuấn</span>
+				</div>
+			</header>
+
+			<section class="content">
+				<!-- DASHBOARD / BFD + DFD mức 0 -->
+				<section class="section active" id="section-dashboard">
+					<div class="grid-3">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Doanh thu hôm nay</div>
+								</div>
+							</div>
+							<div class="kpi-value">12.540.000 ₫</div>
+							<div class="kpi-label">120 hóa đơn • Giá trị TB: 104.500 ₫</div>
+							<div class="kpi-trend up">▲ +8,3% so với cùng kỳ hôm qua</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Tồn kho</div>
+								</div>
+							</div>
+							<div class="kpi-value">18 mặt hàng</div>
+							<div class="chips-row">
+								<span class="chip">Mì ly</span>
+								<span class="chip">Sữa tươi 1L</span>
+								<span class="chip">Nước suối 500ml</span>
+								<span class="chip">Bánh mì sandwich</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid-2">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Hóa đơn gần đây</div>
+									<div class="card-subtitle">Bán hàng & thanh toán</div>
+								</div>
+							</div>
+							<div class="table-wrapper">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã HĐ</th>
+											<th>Thời gian</th>
+											<th>Thu ngân</th>
+											<th>Khách hàng</th>
+											<th>Giá trị</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>HD240312-120</td>
+											<td>11:52</td>
+											<td>NV001</td>
+											<td>Khách lẻ</td>
+											<td>145.000 ₫</td>
+										</tr>
+										<tr>
+											<td>HD240312-119</td>
+											<td>11:45</td>
+											<td>NV001</td>
+											<td>Thẻ thành viên 10023</td>
+											<td>84.500 ₫</td>
+										</tr>
+										<tr>
+											<td>HD240312-118</td>
+											<td>11:40</td>
+											<td>NV003</td>
+											<td>Khách lẻ</td>
+											<td>52.000 ₫</td>
+										</tr>
+										<tr>
+											<td>HD240312-117</td>
+											<td>11:35</td>
+											<td>NV002</td>
+											<td>Thẻ thành viên 10210</td>
+											<td>210.000 ₫</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Tóm tắt tồn kho theo nhóm</div>
+								</div>
+							</div>
+							<div class="table-wrapper">
+								<table>
+									<thead>
+										<tr>
+											<th>Nhóm hàng</th>
+											<th>Tồn kho</th>
+											<th>Ngưỡng tối thiểu</th>
+											<th>Trạng thái</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Nước giải khát</td>
+											<td>320</td>
+											<td>200</td>
+											<td><span class="status-pill success">Đủ hàng</span></td>
+										</tr>
+										<tr>
+											<td>Bánh kẹo</td>
+											<td>95</td>
+											<td>120</td>
+											<td><span class="status-pill warning">Sắp thiếu</span></td>
+										</tr>
+										<tr>
+											<td>Đồ đông lạnh</td>
+											<td>52</td>
+											<td>80</td>
+											<td><span class="status-pill danger">Thiếu</span></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 1.0 BÁN HÀNG & THANH TOÁN -->
+				<section class="section" id="section-sales">
+					<div class="grid-2">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Luồng bán hàng tại quầy</div>
+									<div class="card-subtitle">Tìm mã hàng, quét mã vạch, thêm vào giỏ</div>
+								</div>
+							</div>
+
+							<div class="form-grid">
+								<div class="form-field">
+									<label for="search-product">Tìm kiếm / quét mã vạch</label>
+									<input id="search-product" placeholder="Nhập tên, mã SKU hoặc scan barcode" />
+								</div>
+								<div class="form-field">
+									<label for="price-level">Bảng giá áp dụng</label>
+									<select id="price-level">
+										<option>Giá bán lẻ</option>
+										<option>Giá thành viên</option>
+										<option>Giá khuyến mãi</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label for="customer">Khách hàng</label>
+									<select id="customer">
+										<option>Khách lẻ</option>
+										<option>Thẻ thành viên 10023 - Minh Anh</option>
+										<option>Thẻ thành viên 10210 - Hữu Nghĩa</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label for="cashier">Thu ngân</label>
+									<select id="cashier">
+   										<option>NV001 - Nguyễn Đức Tuấn</option>
+										<option>NV002 - Ngô Kiều Đình Trung</option>
+										<option>NV003 - Dương Hạo Quang</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="btn-row">
+								<button class="btn btn-primary">+ Thêm vào giỏ</button>
+								<button class="btn btn-secondary">Tra cứu sản phẩm</button>
+							</div>
+
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Thông tin thanh toán</div>
+									<div class="card-subtitle">Tổng tiền, chiết khấu, phương thức thanh toán</div>
+								</div>
+							</div>
+
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Tổng tiền hàng</label>
+									<input value="356.500 ₫" disabled />
+								</div>
+								<div class="form-field">
+									<label>Chiết khấu hóa đơn</label>
+									<input placeholder="" />
+								</div>
+								<div class="form-field">
+									<label>Số tiền khách đưa</label>
+									<input placeholder="" />
+								</div>
+								<div class="form-field">
+									<label>Tiền thối lại</label>
+									<input value="0 ₫" disabled />
+								</div>
+								<div class="form-field">
+									<label>Phương thức</label>
+									<select>
+										<option>Tiền mặt</option>
+										<option>Thẻ ngân hàng</option>
+										<option>Ví điện tử</option>
+										<option>Kết hợp nhiều phương thức</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Ghi chú</label>
+									<input placeholder="" />
+								</div>
+							</div>
+
+							<div class="btn-row">
+								<button class="btn btn-primary">Thanh toán & In hóa đơn</button>
+								<button class="btn btn-secondary">Lưu nháp</button>
+								<button class="btn btn-danger">Hủy hóa đơn</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="card" style="margin-top: 10px;">
+						<div class="card-header">
+							<div>
+								<div class="card-title">Giỏ hàng hiện tại</div>
+								<div class="card-subtitle">Chi tiết hàng hóa trong hóa đơn</div>
+							</div>
+						</div>
+						<div class="table-wrapper">
+							<table>
+								<thead>
+									<tr>
+										<th>Mã hàng</th>
+										<th>Tên hàng</th>
+										<th>ĐVT</th>
+										<th>SL</th>
+										<th>Đơn giá</th>
+										<th>CK</th>
+										<th>Thành tiền</th>
+										<th>Thao tác</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>SP0001</td>
+										<td>Mì ly hải sản</td>
+										<td>Ly</td>
+										<td>3</td>
+										<td>10.000</td>
+										<td>0</td>
+										<td>30.000</td>
+										<td><span class="table-action">Xóa</span></td>
+									</tr>
+									<tr>
+										<td>SP0034</td>
+										<td>Sữa tươi 1L không đường</td>
+										<td>Hộp</td>
+										<td>2</td>
+										<td>33.000</td>
+										<td>0</td>
+										<td>66.000</td>
+										<td><span class="table-action">Xóa</span></td>
+									</tr>
+									<tr>
+										<td>SP0102</td>
+										<td>Nước suối 500ml</td>
+										<td>Chai</td>
+										<td>6</td>
+										<td>5.000</td>
+										<td>0</td>
+										<td>30.000</td>
+										<td><span class="table-action">Xóa</span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+							<div class="card" style="margin-top: 10px;">
+								<div class="card-header">
+									<div>
+										<div class="card-title">Tìm kiếm hóa đơn đã lập</div>
+										<div class="card-subtitle">Tra cứu hóa đơn cũ theo mã hóa đơn</div>
+									</div>
+								</div>
+								<div class="form-grid">
+									<div class="form-field" style="grid-column: span 2;">
+										<label>Mã hóa đơn</label>
+										<input placeholder="Nhập mã hóa đơn cần tra cứu (ví dụ: HD240312-001)" />
+									</div>
+								</div>
+								<div class="table-wrapper" style="margin-top: 8px; max-height: 220px; overflow: auto;">
+									<table>
+										<thead>
+											<tr>
+												<th>Mã HĐ</th>
+												<th>Ngày bán</th>
+												<th>Thu ngân</th>
+												<th>Khách hàng</th>
+												<th>Giá trị</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>HD240312-120</td>
+												<td>12/03/2026</td>
+												<td>NV001</td>
+												<td>Khách lẻ</td>
+												<td>145.000 ₫</td>
+											</tr>
+											<tr>
+												<td>HD240311-098</td>
+												<td>11/03/2026</td>
+												<td>NV002</td>
+												<td>Thẻ thành viên 10023</td>
+												<td>210.000 ₫</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+				</section>
+
+				<!-- 2.0 QUẢN LÝ KHO -->
+				<section class="section" id="section-inventory">
+					<div class="grid-2">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Tồn kho theo vị trí</div>
+									<div class="card-subtitle">Kho, Phiếu nhập, Phiếu xuất</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Kho</label>
+									<select>
+										<option>Kho chính 4TL</option>
+										<option>Kho lạnh</option>
+										<option>Kệ trưng bày</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Loại hàng</label>
+									<select>
+										<option>Tất cả</option>
+				<option>Còn nhiều</option>
+										<option>Sắp hết</option>
+										<option>Âm kho / lệch</option>
+									</select>
+								</div>
+							</div>
+							<div class="table-wrapper" style="margin-top: 8px; max-height: 260px; overflow: auto;">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã hàng</th>
+											<th>Tên hàng</th>
+											<th>Kho</th>
+											<th>Tồn thực tế</th>
+											<th>Tồn sổ sách</th>
+											<th>Trạng thái</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>SP0001</td>
+											<td>Mì ly hải sản</td>
+											<td>Kho chính</td>
+											<td>120</td>
+											<td>120</td>
+											<td><span class="status-pill success">Đủ hàng</span></td>
+										</tr>
+										<tr>
+											<td>SP0034</td>
+											<td>Sữa tươi 1L không đường</td>
+											<td>Kho lạnh</td>
+											<td>32</td>
+											<td>40</td>
+											<td><span class="status-pill warning">Lệch kiểm kê</span></td>
+										</tr>
+										<tr>
+											<td>SP0102</td>
+											<td>Nước suối 500ml</td>
+											<td>Kho chính</td>
+											<td>18</td>
+											<td>40</td>
+											<td><span class="status-pill danger">Âm kho</span></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Phiếu xuất / điều chuyển kho</div>
+									<div class="card-subtitle">Cập nhật tồn kho</div>
+								</div>
+								<span class="badge">Phiếu xuất kho</span>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Số phiếu</label>
+									<input value="PXK240312-001" />
+								</div>
+								<div class="form-field">
+									<label>Ngày lập</label>
+									<input value="12/03/2026" />
+								</div>
+								<div class="form-field">
+									<label>Kho xuất</label>
+									<select>
+										<option>Kho chính</option>
+										<option>Kho lạnh</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Kho nhập</label>
+									<select>
+										<option>Kệ trưng bày</option>
+										<option>Kho chính</option>
+									</select>
+								</div>
+								<div class="form-field" style="grid-column: span 2;">
+									<label>Lý do xuất</label>
+									<input placeholder="Điều chuyển trưng bày / Xuất hủy / Khác" />
+								</div>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Lưu phiếu xuất</button>
+								<button class="btn btn-secondary">In phiếu</button>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 3.0 NHẬP HÀNG -->
+				<section class="section" id="section-import">
+					<div class="grid-2">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Đơn đặt hàng nhà cung cấp</div>
+									<div class="card-subtitle">Đặt hàng → Nhập hàng</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Số đơn đặt hàng</label>
+									<input value="PO240312-001" />
+								</div>
+								<div class="form-field">
+									<label>Ngày đặt</label>
+									<input value="12/03/2026" />
+								</div>
+								<div class="form-field">
+									<label>Nhà cung cấp</label>
+									<select>
+										<option>CTy Thực phẩm Á Đông</option>
+										<option>CTy Phân phối Miền Nam</option>
+										<option>CTy Đồ uống Việt</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Nhân viên lập đơn</label>
+									<select>
+										<option>NV004 - Nguyễn Quang Vinh</option>
+										<option>NV002 - Ngô Kiều Đình Trung</option>
+									</select>
+								</div>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Gửi đơn đặt hàng</button>
+								<button class="btn btn-secondary">Xuất hóa đơn</button>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Phiếu nhập hàng</div>
+									<div class="card-subtitle">Nhập kho từ NCC / đơn đặt</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Số phiếu nhập</label>
+									<input value="PN240312-001" />
+								</div>
+								<div class="form-field">
+									<label>Kho nhập</label>
+									<select>
+										<option>Kho chính 4TL</option>
+										<option>Kho lạnh</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Ngày nhập</label>
+									<input value="12/03/2026" />
+								</div>
+								<div class="form-field">
+									<label>Hình thức thanh toán</label>
+									<select>
+										<option>Thanh toán ngay</option>
+										<option>Công nợ 15 ngày</option>
+										<option>Công nợ 30 ngày</option>
+									</select>
+								</div>
+							</div>
+							<div class="table-wrapper" style="margin-top: 8px; max-height: 180px; overflow: auto;">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã hàng</th>
+											<th>Tên hàng</th>
+											<th>SL đặt</th>
+											<th>SL nhận</th>
+											<th>Đơn giá</th>
+											<th>Thành tiền</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>SP0001</td>
+											<td>Mì ly hải sản</td>
+											<td>100</td>
+											<td>100</td>
+											<td>6.500</td>
+											<td>650.000</td>
+										</tr>
+										<tr>
+											<td>SP0034</td>
+											<td>Sữa tươi 1L không đường</td>
+											<td>60</td>
+											<td>58</td>
+											<td>28.000</td>
+											<td>1.624.000</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Lưu phiếu nhập & Cập nhật kho</button>
+								<button class="btn btn-secondary">In phiếu</button>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 7.0 QUẢN LÝ NHÀ CUNG CẤP -->
+				<section class="section" id="section-supplier">
+					<div class="grid-2">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Thông tin nhà cung cấp</div>
+									<div class="card-subtitle">Quản lý hồ sơ NCC phục vụ nhập hàng</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Mã NCC</label>
+									<input value="NCC001" />
+								</div>
+								<div class="form-field">
+									<label>Tên nhà cung cấp</label>
+									<input value="Công ty Thực phẩm An Khang" />
+								</div>
+								<div class="form-field">
+									<label>Người liên hệ</label>
+									<input value="Trần Minh Hoàng" />
+								</div>
+								<div class="form-field">
+									<label>Số điện thoại</label>
+									<input value="028 3822 8899" />
+								</div>
+								<div class="form-field">
+									<label>Email</label>
+									<input value="contact@ankhang.vn" />
+								</div>
+								<div class="form-field">
+									<label>Hạn mức công nợ</label>
+									<input value="50.000.000" />
+								</div>
+								<div class="form-field" style="grid-column: span 2;">
+									<label>Địa chỉ</label>
+									<input value="12 Lê Duẩn, Quận 1, TP.HCM" />
+								</div>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Lưu nhà cung cấp</button>
+								<button class="btn btn-secondary">Tạo hợp đồng nhập</button>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Danh sách NCC</div>
+									<div class="card-subtitle">Theo dõi lần nhập gần nhất và trạng thái</div>
+								</div>
+							</div>
+							<div class="table-wrapper">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã NCC</th>
+											<th>Tên NCC</th>
+											<th>Lần nhập gần nhất</th>
+											<th>Công nợ hiện tại</th>
+											<th>Trạng thái</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>NCC001</td>
+											<td>Công ty Thực phẩm An Khang</td>
+											<td>16/03/2026</td>
+											<td>12.500.000</td>
+											<td><span class="status-pill success">Đang hợp tác</span></td>
+										</tr>
+										<tr>
+											<td>NCC002</td>
+											<td>Công ty Đồ uống Minh Phát</td>
+											<td>14/03/2026</td>
+											<td>0</td>
+											<td><span class="status-pill warning">Chờ đơn mới</span></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 5.0 QUẢN LÝ KHÁCH HÀNG THÂN THIẾT -->
+				<section class="section" id="section-customer">
+					<div class="section-grid">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Tiếp nhận tra cứu khách hàng</div>
+									<div class="card-subtitle">Nhập SĐT hoặc mã khách để kiểm tra thông tin trong D5 Khách hàng</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="form-grid">
+									<div class="form-field">
+										<label>Tìm theo mã khách hàng (mã thành viên)</label>
+										<input type="text" id="customer-search-id" placeholder="VD: KH0001" />
+									</div>
+									<div class="form-field">
+										<label>Tìm theo số điện thoại</label>
+										<input type="text" id="customer-search-phone" placeholder="VD: 0901234567" />
+									</div>
+									<div class="form-field">
+										<label>Tên khách hàng</label>
+										<input type="text" id="customer-search-name" placeholder="Nhập họ tên khách hàng" />
+									</div>
+									<div class="form-field">
+										<label>Hạng thẻ</label>
+										<select id="customer-search-tier">
+											<option>Tất cả</option>
+											<option>Thành viên</option>
+											<option>Silver</option>
+											<option>Gold</option>
+											<option>Platinum</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>Mã KH</th>
+												<th>Họ tên</th>
+												<th>SĐT</th>
+												<th>Hạng thẻ</th>
+												<th>Điểm tích lũy</th>
+												<th>Trạng thái</th>
+												<th>Thao tác</th>
+											</tr>
+										</thead>
+										<tbody id="customer-table-body"></tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Cập nhật điểm & hạng khách hàng</div>
+									<div class="card-subtitle">Thông tin hợp lệ sẽ được cập nhật điểm/hạng hoặc thêm mới khách hàng</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="form-grid">
+									<div class="form-field">
+										<label>Mã khách hàng</label>
+										<input type="text" id="customer-form-id" value="KH0001" />
+									</div>
+									<div class="form-field">
+										<label>Họ tên</label>
+										<input type="text" id="customer-form-name" value="Nguyễn Văn An" />
+									</div>
+									<div class="form-field">
+										<label>Số điện thoại</label>
+										<input type="text" id="customer-form-phone" value="0901 234 567" />
+									</div>
+									<div class="form-field">
+										<label>Email</label>
+										<input type="email" id="customer-form-email" placeholder="vd: khachhang@example.com" />
+									</div>
+								</div>
+								<div class="form-grid">
+									<div class="form-field">
+										<label>Điểm tích lũy</label>
+										<input type="number" id="customer-form-points" value="5200" />
+									</div>
+									<div class="form-field">
+										<label>Hạng khách hàng</label>
+										<select id="customer-form-tier">
+											<option>Thành viên</option>
+											<option selected>Gold</option>
+											<option>Platinum</option>
+											<option>Silver</option>
+										</select>
+									</div>
+									<div class="form-field">
+										<label>Trạng thái</label>
+										<select id="customer-form-status">
+											<option selected>Đang hoạt động</option>
+											<option>Tạm ngưng</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="divider"></div>
+
+								<div class="form-grid">
+									<div class="form-field">
+										<label>Chính sách tích điểm</label>
+										<input type="text" id="customer-form-policy" value="1.000đ = 1 điểm" disabled />
+									</div>
+									<div class="form-field">
+										<label>Ngày tham gia</label>
+										<input type="date" id="customer-form-join-date" value="2024-01-10" />
+									</div>
+								</div>
+
+								<div class="card-actions">
+									<button class="btn btn-primary" id="customer-save-btn">Lưu thông tin</button>
+									<button class="btn btn-secondary" id="customer-create-btn">Thêm mới</button>
+									<button class="btn btn-danger" id="customer-delete-btn">Xóa khách hàng</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 5.0 BÁO CÁO & THỐNG KÊ -->
+				<section class="section" id="section-report">
+					<div class="card">
+						<div class="card-header">
+							<div>
+								<div class="card-title">Báo cáo</div>
+								<div class="card-subtitle">Tổng hợp dữ liệu từ Bán hàng, kho, nhập hàng</div>
+							</div>
+							<span class="badge">Chọn kỳ báo cáo</span>
+						</div>
+						<div class="form-grid">
+							<div class="form-field">
+								<label>Từ ngày</label>
+								<input value="01/03/2026" />
+							</div>
+							<div class="form-field">
+								<label>Đến ngày</label>
+								<input value="12/03/2026" />
+							</div>
+							<div class="form-field">
+								<label>Loại báo cáo</label>
+								<select>
+									<option>Báo cáo doanh thu theo ngày</option>
+									<option>Báo cáo doanh thu theo nhóm hàng</option>
+									<option>Báo cáo lãi gộp</option>
+									<option>Nhật ký tồn kho</option>
+								</select>
+							</div>
+							<div class="form-field">
+								<label>Chi nhánh / cửa hàng</label>
+								<select>
+									<option>4TL - Cửa hàng chính</option>
+									<option>4TL - Chi nhánh 02</option>
+								</select>
+							</div>
+						</div>
+						<div class="btn-row">
+							<button class="btn btn-primary">Xem báo cáo</button>
+						</div>
+					</div>
+
+					<div class="grid-3" style="margin-top: 10px;">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Doanh thu theo ngày</div>
+									<div class="card-subtitle">Tổng doanh thu từng ngày trong kỳ</div>
+								</div>
+							</div>
+							<div class="table-wrapper">
+								<table>
+									<thead>
+										<tr>
+											<th>Ngày</th>
+											<th>Số hóa đơn</th>
+											<th>Doanh thu</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>09/03/2026</td>
+											<td>98</td>
+											<td>8.950.000</td>
+										</tr>
+										<tr>
+											<td>10/03/2026</td>
+											<td>112</td>
+											<td>10.420.000</td>
+										</tr>
+										<tr>
+											<td>11/03/2026</td>
+											<td>125</td>
+											<td>11.780.000</td>
+										</tr>
+										<tr>
+											<td>12/03/2026</td>
+											<td>120</td>
+											<td>12.540.000</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Top 5 mặt hàng bán chạy</div>
+									<div class="card-subtitle">Dựa trên tổng SL bán</div>
+								</div>
+							</div>
+							<div class="table-wrapper">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã</th>
+											<th>Tên hàng</th>
+											<th>SL bán</th>
+											<th>Doanh thu</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>SP0001</td>
+											<td>Mì ly hải sản</td>
+											<td>320</td>
+											<td>3.200.000</td>
+										</tr>
+										<tr>
+											<td>SP0034</td>
+											<td>Sữa tươi 1L không đường</td>
+											<td>210</td>
+											<td>6.930.000</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Tóm tắt lợi nhuận</div>
+									<div class="card-subtitle">Doanh thu - Giá vốn theo kỳ</div>
+								</div>
+							</div>
+							<div class="kpi-value">Lãi gộp: 43,5%</div>
+							<div class="kpi-label">Doanh thu: 420.000.000 ₫ • Giá vốn: 237.300.000 ₫</div>
+							<div class="kpi-trend up">▲ Tốt hơn kỳ trước 2,1%</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 8.0 QUẢN LÝ NHÂN SỰ -->
+				<section class="section" id="section-hr">
+					<div class="grid-3">
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Chấm công</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Mã nhân viên</label>
+									<select>
+										<option>NV001 - Nguyễn Đức Tuấn</option>
+										<option>NV002 - Ngô Kiều Đình Trung</option>
+										<option>NV003 - Dương Hạo Quang</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Ngày chấm công</label>
+									<input value="17/03/2026" />
+								</div>
+								<div class="form-field">
+									<label>Giờ vào</label>
+									<input value="07:58" />
+								</div>
+								<div class="form-field">
+									<label>Giờ tan ca</label>
+									<input value="17:05" />
+								</div>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Ghi nhận chấm công</button>
+								<button class="btn btn-secondary">Tính giờ thực tế</button>
+							</div>
+							<div class="table-wrapper" style="margin-top: 8px; max-height: 260px; overflow: auto;">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã NV</th>
+											<th>Tên nhân viên</th>
+											<th>Ngày</th>
+											<th>Giờ vào</th>
+											<th>Giờ ra</th>
+											<th>Giờ thực tế</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>NV001</td>
+											<td>Nguyễn Đức Tuấn</td>
+											<td>17/03/2026</td>
+											<td>07:58</td>
+											<td>17:05</td>
+											<td>9.1</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Phân ca</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Mã nhân viên</label>
+									<select>
+										<option>NV001 - Nguyễn Đức Tuấn</option>
+										<option>NV002 - Ngô Kiều Đình Trung</option>
+										<option>NV003 - Dương Hạo Quang</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Ca làm</label>
+									<select>
+										<option>Sáng</option>
+										<option>Chiều</option>
+										<option>Tối</option>
+									</select>
+								</div>
+								<div class="form-field" style="grid-column: span 2;">
+									<label>Lịch trực tuần / tháng</label>
+									<input value="Tuần 12: T2-T6 ca Sáng, T7 ca Chiều" />
+								</div>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Lưu phân ca</button>
+								<button class="btn btn-secondary">Cập nhật lịch trực</button>
+							</div>
+							<div class="table-wrapper" style="margin-top: 8px; max-height: 260px; overflow: auto;">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã NV</th>
+											<th>Tên nhân viên</th>
+											<th>Lịch</th>
+											<th>Ca</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>NV001</td>
+											<td>Nguyễn Đức Tuấn</td>
+											<td>Tuần 12</td>
+											<td>Chiều</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-header">
+								<div>
+									<div class="card-title">Tính lương</div>
+								</div>
+							</div>
+							<div class="form-grid">
+								<div class="form-field">
+									<label>Mã nhân viên</label>
+									<select>
+										<option>NV001 - Nguyễn Đức Tuấn</option>
+										<option>NV002 - Ngô Kiều Đình Trung</option>
+										<option>NV003 - Dương Hạo Quang</option>
+									</select>
+								</div>
+								<div class="form-field">
+									<label>Kỳ lương</label>
+									<input value="03/2026" />
+								</div>
+								<div class="form-field">
+									<label>Tổng giờ làm thực tế</label>
+									<input value="208" />
+								</div>
+								<div class="form-field">
+									<label>Lương cơ bản / giờ</label>
+									<input value="35.000" />
+								</div>
+								<div class="form-field">
+									<label>Thưởng</label>
+									<input value="500.000" />
+								</div>
+								<div class="form-field">
+									<label>Tổng lương</label>
+									<input value="7.780.000" />
+								</div>
+							</div>
+							<div class="btn-row">
+								<button class="btn btn-primary">Tính lương</button>
+								<button class="btn btn-secondary">Xuất phiếu lương</button>
+							</div>
+							<div class="table-wrapper" style="margin-top: 8px; max-height: 220px; overflow: auto;">
+								<table>
+									<thead>
+										<tr>
+											<th>Mã NV</th>
+											<th>Tên nhân viên</th>
+											<th>Kỳ</th>
+											<th>Giờ thực tế</th>
+											<th>Lương</th>
+											<th>Phiếu lương</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>NV001</td>
+											<td>Nguyễn Đức Tuấn</td>
+											<td>03/2026</td>
+											<td>208</td>
+											<td>7.780.000</td>
+											<td>PL-0326-001</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</main>
+	</div>
+
+	<script>
+		const navButtons = document.querySelectorAll('.nav-button');
+		const sections = {
+			dashboard: document.getElementById('section-dashboard'),
+			sales: document.getElementById('section-sales'),
+			inventory: document.getElementById('section-inventory'),
+			import: document.getElementById('section-import'),
+			supplier: document.getElementById('section-supplier'),
+			customer: document.getElementById('section-customer'),
+			report: document.getElementById('section-report'),
+			hr: document.getElementById('section-hr')
+		};
+
+		const titleMap = {
+			dashboard: 'Tổng quan cửa hàng',
+			sales: 'Bán hàng & thanh toán',
+			inventory: 'Quản lý kho',
+			import: 'Nhập hàng',
+			supplier: 'Quản lý nhà cung cấp',
+			customer: 'Quản lý khách hàng thân thiết',
+			report: 'Báo cáo & thống kê',
+			hr: 'Quản lý nhân sự'
+		};
+
+		const currentTitle = document.getElementById('current-section-title');
+
+		navButtons.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const target = btn.getAttribute('data-target');
+				if (!target || !sections[target]) return;
+
+				navButtons.forEach((b) => b.classList.remove('active'));
+				btn.classList.add('active');
+
+				Object.values(sections).forEach((sec) => sec.classList.remove('active'));
+				sections[target].classList.add('active');
+
+				currentTitle.textContent = titleMap[target] || '';
+			});
+		});
+
+		const customerUI = {
+			searchId: document.getElementById('customer-search-id'),
+			searchPhone: document.getElementById('customer-search-phone'),
+			searchName: document.getElementById('customer-search-name'),
+			searchTier: document.getElementById('customer-search-tier'),
+			tableBody: document.getElementById('customer-table-body'),
+			id: document.getElementById('customer-form-id'),
+			name: document.getElementById('customer-form-name'),
+			phone: document.getElementById('customer-form-phone'),
+			email: document.getElementById('customer-form-email'),
+			points: document.getElementById('customer-form-points'),
+			tier: document.getElementById('customer-form-tier'),
+			status: document.getElementById('customer-form-status'),
+			policy: document.getElementById('customer-form-policy'),
+			joinDate: document.getElementById('customer-form-join-date'),
+			saveBtn: document.getElementById('customer-save-btn'),
+			createBtn: document.getElementById('customer-create-btn'),
+			createTopBtn: document.getElementById('customer-create-top'),
+			deleteBtn: document.getElementById('customer-delete-btn')
+		};
+
+		if (customerUI.tableBody) {
+			const customerState = [
+				{
+					id: 'KH0001',
+					name: 'Nguyễn Văn An',
+					phone: '0901 234 567',
+					email: 'an.nguyen@example.com',
+					points: 5200,
+					tier: 'Gold',
+					status: 'Đang hoạt động',
+					policy: '1.000đ = 1 điểm',
+					joinDate: '2024-01-10'
+				},
+				{
+					id: 'KH0002',
+					name: 'Trần Thị Bình',
+					phone: '0902 345 678',
+					email: 'binh.tran@example.com',
+					points: 1850,
+					tier: 'Silver',
+					status: 'Tạm ngưng',
+					policy: '1.000đ = 1 điểm',
+					joinDate: '2024-02-01'
+				},
+				{
+					id: 'KH0003',
+					name: 'Lê Minh Cường',
+					phone: '0903 456 789',
+					email: 'cuong.le@example.com',
+					points: 320,
+					tier: 'Thành viên',
+					status: 'Đang hoạt động',
+					policy: '1.000đ = 1 điểm',
+					joinDate: '2024-03-15'
+				}
+			];
+
+			let selectedCustomerId = '';
+
+			const normalize = (value) => String(value || '').trim().toLowerCase();
+			const digits = (value) => String(value || '').replace(/\D/g, '');
+			const formatPoints = (value) => new Intl.NumberFormat('vi-VN').format(Number(value) || 0);
+			const statusClass = (status) => (status === 'Đang hoạt động' ? 'success' : 'warning');
+
+			const generateCustomerCode = () => {
+				const maxCode = customerState.reduce((max, customer) => {
+					const num = Number(String(customer.id).replace(/\D/g, '')) || 0;
+					return Math.max(max, num);
+				}, 0);
+				return `KH${String(maxCode + 1).padStart(4, '0')}`;
+			};
+
+			const getFilters = () => ({
+				id: normalize(customerUI.searchId.value),
+				phone: digits(customerUI.searchPhone.value),
+				name: normalize(customerUI.searchName.value),
+				tier: customerUI.searchTier.value
+			});
+
+			const fillCustomerForm = (customer) => {
+				customerUI.id.value = customer.id;
+				customerUI.name.value = customer.name;
+				customerUI.phone.value = customer.phone;
+				customerUI.email.value = customer.email;
+				customerUI.points.value = customer.points;
+				customerUI.tier.value = customer.tier;
+				customerUI.status.value = customer.status;
+				customerUI.policy.value = customer.policy;
+				customerUI.joinDate.value = customer.joinDate;
+				selectedCustomerId = customer.id;
+			};
+
+			const prepareNewCustomer = () => {
+				selectedCustomerId = '';
+				customerUI.id.value = generateCustomerCode();
+				customerUI.name.value = '';
+				customerUI.phone.value = '';
+				customerUI.email.value = '';
+				customerUI.points.value = 0;
+				customerUI.tier.value = 'Thành viên';
+				customerUI.status.value = 'Đang hoạt động';
+				customerUI.policy.value = '1.000đ = 1 điểm';
+				customerUI.joinDate.value = new Date().toISOString().slice(0, 10);
+				customerUI.name.focus();
+			};
+
+			const renderCustomerTable = () => {
+				const filters = getFilters();
+				const filtered = customerState.filter((customer) => {
+					const idMatch = !filters.id || normalize(customer.id).includes(filters.id);
+					const phoneMatch = !filters.phone || digits(customer.phone).includes(filters.phone);
+					const nameMatch = !filters.name || normalize(customer.name).includes(filters.name);
+					const tierMatch = filters.tier === 'Tất cả' || customer.tier === filters.tier;
+					return idMatch && phoneMatch && nameMatch && tierMatch;
+				});
+
+				customerUI.tableBody.innerHTML = filtered
+					.map((customer) => {
+						const isSelected = customer.id === selectedCustomerId;
+						const selectedStyle = isSelected ? ' style="background:#eff6ff;"' : '';
+						return `
+							<tr data-customer-id="${customer.id}"${selectedStyle}>
+								<td>${customer.id}</td>
+								<td>${customer.name}</td>
+								<td>${customer.phone}</td>
+								<td>${customer.tier}</td>
+								<td>${formatPoints(customer.points)}</td>
+								<td><span class="status-pill ${statusClass(customer.status)}">${customer.status}</span></td>
+								<td>
+									<button class="btn btn-secondary" data-row-action="edit" data-id="${customer.id}" style="padding:4px 8px; margin-right:6px;">Sửa</button>
+									<button class="btn btn-danger" data-row-action="delete" data-id="${customer.id}" style="padding:4px 8px;">Xóa</button>
+								</td>
+							</tr>
+						`;
+					})
+					.join('');
+
+				customerUI.tableBody.querySelectorAll('tr[data-customer-id]').forEach((row) => {
+					row.addEventListener('click', () => {
+						const customerId = row.getAttribute('data-customer-id');
+						const customer = customerState.find((item) => item.id === customerId);
+						if (!customer) return;
+						fillCustomerForm(customer);
+						renderCustomerTable();
+					});
+				});
+
+				customerUI.tableBody.querySelectorAll('button[data-row-action="edit"]').forEach((button) => {
+					button.addEventListener('click', (event) => {
+						event.stopPropagation();
+						const customerId = button.getAttribute('data-id');
+						const customer = customerState.find((item) => item.id === customerId);
+						if (!customer) return;
+						fillCustomerForm(customer);
+						renderCustomerTable();
+					});
+				});
+
+				customerUI.tableBody.querySelectorAll('button[data-row-action="delete"]').forEach((button) => {
+					button.addEventListener('click', (event) => {
+						event.stopPropagation();
+						const customerId = button.getAttribute('data-id');
+						if (!customerId) return;
+						if (!confirm(`Xác nhận xóa khách hàng ${customerId}?`)) return;
+						const index = customerState.findIndex((item) => item.id === customerId);
+						if (index < 0) return;
+						customerState.splice(index, 1);
+						if (selectedCustomerId === customerId) {
+							selectedCustomerId = '';
+							if (customerState.length > 0) {
+								fillCustomerForm(customerState[0]);
+							} else {
+								prepareNewCustomer();
+							}
+						}
+						renderCustomerTable();
+					});
+				});
+			};
+
+			const readForm = () => ({
+				id: customerUI.id.value.trim().toUpperCase(),
+				name: customerUI.name.value.trim(),
+				phone: customerUI.phone.value.trim(),
+				email: customerUI.email.value.trim(),
+				points: Math.max(0, Number(customerUI.points.value) || 0),
+				tier: customerUI.tier.value,
+				status: customerUI.status.value,
+				policy: customerUI.policy.value.trim() || '1.000đ = 1 điểm',
+				joinDate: customerUI.joinDate.value
+			});
+
+			const saveCustomer = () => {
+				const payload = readForm();
+				if (!payload.id || !payload.name || !payload.phone) {
+					alert('Vui lòng nhập đủ Mã khách hàng, Họ tên và Số điện thoại.');
+					return;
+				}
+
+				const existingIndex = customerState.findIndex((item) => item.id === payload.id);
+				if (existingIndex >= 0) {
+					customerState[existingIndex] = payload;
+				} else {
+					customerState.push(payload);
+				}
+
+				selectedCustomerId = payload.id;
+				renderCustomerTable();
+				alert(existingIndex >= 0 ? 'Đã cập nhật khách hàng.' : 'Đã thêm khách hàng mới.');
+			};
+
+			const deleteCustomer = () => {
+				const id = customerUI.id.value.trim().toUpperCase();
+				if (!id) {
+					alert('Vui lòng chọn khách hàng cần xóa.');
+					return;
+				}
+
+				const index = customerState.findIndex((item) => item.id === id);
+				if (index < 0) {
+					alert('Không tìm thấy khách hàng để xóa.');
+					return;
+				}
+
+				if (!confirm(`Xác nhận xóa khách hàng ${id}?`)) return;
+				customerState.splice(index, 1);
+				selectedCustomerId = '';
+				renderCustomerTable();
+				if (customerState.length > 0) {
+					fillCustomerForm(customerState[0]);
+				} else {
+					prepareNewCustomer();
+				}
+				alert('Đã xóa khách hàng.');
+			};
+
+			['input', 'change'].forEach((eventName) => {
+				customerUI.searchId.addEventListener(eventName, renderCustomerTable);
+				customerUI.searchPhone.addEventListener(eventName, renderCustomerTable);
+				customerUI.searchName.addEventListener(eventName, renderCustomerTable);
+				customerUI.searchTier.addEventListener(eventName, renderCustomerTable);
+			});
+
+			customerUI.saveBtn.addEventListener('click', saveCustomer);
+			customerUI.deleteBtn.addEventListener('click', deleteCustomer);
+			customerUI.createBtn.addEventListener('click', prepareNewCustomer);
+			if (customerUI.createTopBtn) {
+				customerUI.createTopBtn.addEventListener('click', prepareNewCustomer);
+			}
+
+			fillCustomerForm(customerState[0]);
+			renderCustomerTable();
+		}
+	</script>
+</body>
+</html>
