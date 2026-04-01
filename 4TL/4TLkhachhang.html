@@ -1,1033 +1,1391 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>4TL - Cổng khách hàng</title>
-	<style>
-		:root {
-			--primary: #2563eb;
-			--primary-dark: #1d4ed8;
-			--accent: #f97316;
-			--bg: #f3f4f6;
-			--border: #d1d5db;
-			--text: #111827;
-			--text-soft: #6b7280;
-			--success: #15803d;
-			--danger: #b91c1c;
-		}
-
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-		}
-
-		body {
-			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			background: radial-gradient(circle at top, #e5f0ff 0, #f9fafb 42%, #f3f4f6 100%);
-			color: var(--text);
-			min-height: 100vh;
-		}
-
-		.app-shell {
-			display: grid;
-			grid-template-columns: 260px 1fr;
-			min-height: 100vh;
-		}
-
-		.sidebar {
-			background: linear-gradient(180deg, #ffffff, #f9fafb 50%, #e5e7eb);
-			border-right: 1px solid var(--border);
-			padding: 20px 16px;
-			display: flex;
-			flex-direction: column;
-			gap: 18px;
-		}
-
-		.brand {
-			display: flex;
-			align-items: center;
-			gap: 10px;
-		}
-
-		.brand-logo {
-			width: 42px;
-			height: 42px;
-			border-radius: 999px;
-			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-			color: #f9fafb;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-weight: 700;
-			font-size: 16px;
-			box-shadow: 0 10px 22px rgba(37, 99, 235, 0.4);
-		}
-
-		.brand-text {
-			display: flex;
-			flex-direction: column;
-		}
-
-		.brand-title {
-			font-size: 13px;
-			font-weight: 700;
-			letter-spacing: 0.09em;
-			text-transform: uppercase;
-		}
-
-		.brand-subtitle {
-			font-size: 11px;
-			color: var(--text-soft);
-		}
-
-		.sidebar-title {
-			font-size: 11px;
-			text-transform: uppercase;
-			letter-spacing: 0.14em;
-			color: var(--text-soft);
-			margin: 2px 4px 4px;
-		}
-
-		.nav {
-			display: flex;
-			flex-direction: column;
-			gap: 5px;
-		}
-
-		.nav-button {
-			border: none;
-			background: transparent;
-			width: 100%;
-			padding: 8px 10px;
-			border-radius: 10px;
-			display: flex;
-			gap: 9px;
-			align-items: center;
-			text-align: left;
-			cursor: pointer;
-			color: var(--text-soft);
-			transition: all 0.15s ease-out;
-		}
-
-		.nav-button:hover:not(.active) {
-			background: #eff6ff;
-			color: var(--text);
-		}
-
-		.nav-button.active {
-			background: radial-gradient(circle at top left, #dbeafe, #eff6ff);
-			color: var(--text);
-		}
-
-		.nav-icon {
-			width: 24px;
-			height: 24px;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			border-radius: 8px;
-			background: linear-gradient(135deg, #e0f2fe, #dbeafe);
-			border: 1px solid #bfdbfe;
-		}
-
-		.nav-button.active .nav-icon {
-			background: linear-gradient(135deg, var(--primary), #4f46e5);
-			border-color: var(--primary);
-			color: #f9fafb;
-		}
-
-		.nav-text {
-			display: flex;
-			flex-direction: column;
-			gap: 1px;
-		}
-
-		.nav-primary {
-			font-size: 13px;
-			font-weight: 500;
-		}
-
-		.nav-secondary {
-			font-size: 11px;
-			color: var(--text-soft);
-		}
-
-		.member-card {
-			border-radius: 12px;
-			border: 1px solid #bfdbfe;
-			background: linear-gradient(145deg, #dbeafe, #eff6ff);
-			padding: 10px;
-			font-size: 12px;
-		}
-
-		.sidebar-bottom {
-			margin-top: auto;
-			display: flex;
-			flex-direction: column;
-			gap: 8px;
-		}
-
-		.btn-logout {
-			align-self: flex-start;
-			border-radius: 999px;
-			border: 1px solid rgba(248, 113, 113, 0.8);
-			background: rgba(248, 113, 113, 0.12);
-			color: var(--danger);
-			padding: 7px 14px;
-			font-size: 12px;
-			cursor: pointer;
-		}
-
-		.member-card strong {
-			display: block;
-			margin-bottom: 3px;
-		}
-
-		.member-name {
-			display: block;
-			font-size: 13.5px;
-			font-weight: 500;
-			line-height: 1.4;
-		}
-
-		.member-points {
-			font-size: 18px;
-			font-weight: 700;
-			margin: 6px 0;
-		}
-
-		.member-contact {
-			display: block;
-			font-size: 12.5px;
-			font-weight: 500;
-			line-height: 1.45;
-			color: #334155;
-			margin-top: 2px;
-		}
-
-		.main {
-			padding: 16px 18px 22px;
-			display: flex;
-			flex-direction: column;
-			gap: 14px;
-		}
-
-		.topbar {
-			display: flex;
-			gap: 10px;
-			align-items: center;
-		}
-
-		.topbar-title {
-			font-size: 18px;
-			font-weight: 600;
-		}
-
-		.topbar-badge {
-			font-size: 11px;
-			text-transform: uppercase;
-			letter-spacing: 0.16em;
-			padding: 3px 8px;
-			border-radius: 999px;
-			border: 1px solid rgba(148, 163, 184, 0.5);
-			color: var(--text-soft);
-		}
-
-		.topbar-spacer {
-			flex: 1;
-		}
-
-		.topbar-info {
-			font-size: 12px;
-			color: var(--text-soft);
-		}
-
-		.pill {
-			border-radius: 999px;
-			padding: 4px 10px;
-			border: 1px solid var(--border);
-		}
-
-		.content {
-			display: flex;
-			flex-direction: column;
-			gap: 12px;
-		}
-
-		.section {
-			display: none;
-		}
-
-		.section.active {
-			display: block;
-		}
-
-		.grid-2 {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 12px;
-		}
-
-		.grid-3 {
-			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 12px;
-		}
-
-		.card {
-			background: radial-gradient(circle at top left, #e0f2fe 0, #ffffff 60%, #f9fafb 100%);
-			border: 1px solid var(--border);
-			border-radius: 14px;
-			padding: 12px;
-			box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-		}
-
-		.search-card {
-			display: flex;
-			flex-direction: column;
-		}
-
-		.search-card .form-grid {
-			flex: 1;
-		}
-
-		.search-actions {
-			margin-top: auto;
-			justify-content: flex-end;
-		}
-
-		.card-header {
-			display: flex;
-			justify-content: space-between;
-			gap: 8px;
-			align-items: center;
-			margin-bottom: 8px;
-		}
-
-		.card-title {
-			font-size: 13px;
-			font-weight: 600;
-		}
-
-		.card-subtitle {
-			font-size: 11px;
-			color: var(--text-soft);
-		}
-
-		.kpi-value {
-			font-size: 20px;
-			font-weight: 600;
-		}
-
-		.kpi-label {
-			font-size: 11px;
-			color: var(--text-soft);
-			margin-top: 2px;
-		}
-
-		.kpi-trend {
-			font-size: 11px;
-			margin-top: 4px;
-		}
-
-		.kpi-trend.up {
-			color: var(--success);
-		}
-
-		.table-wrapper {
-			border: 1px solid var(--border);
-			border-radius: 10px;
-			overflow: hidden;
-			background: #ffffff;
-		}
-
-		table {
-			width: 100%;
-			border-collapse: collapse;
-			font-size: 12px;
-		}
-
-		th,
-		td {
-			padding: 8px;
-			text-align: left;
-		}
-
-		th {
-			background: #f3f4f6;
-			color: var(--text-soft);
-			font-weight: 500;
-			border-bottom: 1px solid var(--border);
-		}
-
-		tbody tr:nth-child(even) {
-			background: #f9fafb;
-		}
-
-		tbody tr:hover {
-			background: #dbeafe;
-		}
-
-		.form-grid {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 8px 10px;
-		}
-
-		.form-field {
-			display: flex;
-			flex-direction: column;
-			gap: 4px;
-		}
-
-		label {
-			font-size: 11px;
-			color: var(--text-soft);
-		}
-
-		input,
-		select,
-		textarea {
-			background: #f9fafb;
-			border: 1px solid var(--border);
-			border-radius: 8px;
-			padding: 6px 8px;
-			font-size: 12px;
-			font-family: inherit;
-			color: var(--text);
-		}
-
-		textarea {
-			resize: vertical;
-			min-height: 58px;
-		}
-
-		input:focus,
-		select:focus,
-		textarea:focus {
-			outline: 1px solid rgba(59, 130, 246, 0.8);
-			border-color: rgba(59, 130, 246, 0.8);
-		}
-
-		.btn-row {
-			display: flex;
-			gap: 8px;
-			margin-top: 10px;
-			flex-wrap: wrap;
-		}
-
-		.btn {
-			border-radius: 999px;
-			border: 1px solid transparent;
-			padding: 7px 14px;
-			font-size: 12px;
-			cursor: pointer;
-		}
-
-		.btn-primary {
-			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-			border-color: rgba(59, 130, 246, 0.9);
-			color: #f9fafb;
-		}
-
-		.btn-secondary {
-			background: #e5e7eb;
-			border-color: #d1d5db;
-			color: var(--text);
-		}
-
-		.btn-danger {
-			background: rgba(248, 113, 113, 0.12);
-			border-color: rgba(248, 113, 113, 0.8);
-			color: var(--danger);
-		}
-
-		.status-pill {
-			display: inline-flex;
-			align-items: center;
-			padding: 2px 7px;
-			border-radius: 999px;
-			font-size: 10px;
-		}
-
-		.status-pill.success {
-			background: #dcfce7;
-			color: #166534;
-		}
-
-		.status-pill.pending {
-			background: #fef3c7;
-			color: #92400e;
-		}
-
-		.total-box {
-			display: grid;
-			grid-template-columns: 1fr auto;
-			gap: 6px;
-			margin-top: 10px;
-			font-size: 12px;
-		}
-
-		.flow-note {
-			font-size: 11px;
-			color: var(--text-soft);
-			margin-top: 8px;
-		}
-
-		.total-box strong {
-			font-size: 15px;
-		}
-
-		.empty-note {
-			font-size: 12px;
-			color: var(--text-soft);
-			padding: 10px;
-			text-align: center;
-		}
-
-		.quick-note-tip {
-			font-size: 11px;
-			color: var(--text-soft);
-			margin-top: 6px;
-		}
-
-		.badge {
-			font-size: 10px;
-			border-radius: 999px;
-			padding: 2px 8px;
-			background: #e5e7eb;
-			border: 1px solid rgba(148, 163, 184, 0.7);
-			color: #374151;
-		}
-
-		@media (max-width: 980px) {
-			.app-shell {
-				grid-template-columns: 1fr;
-			}
-
-			.sidebar {
-				border-right: none;
-				border-bottom: 1px solid var(--border);
-				padding-bottom: 10px;
-			}
-
-			.nav {
-				flex-direction: row;
-				overflow-x: auto;
-			}
-
-			.nav-button {
-				min-width: 210px;
-			}
-
-			.grid-2,
-			.grid-3 {
-				grid-template-columns: 1fr;
-			}
-
-			.sidebar-bottom {
-				margin-top: 2px;
-			}
-		}
-	</style>
-</head>
-<body>
-	<div class="app-shell">
-		<aside class="sidebar">
-			<div class="brand">
-				<div class="brand-logo">4TL</div>
-				<div class="brand-text">
-					<span class="brand-title">Customer</span>
-					<span class="brand-subtitle">Mua sắm nhanh tại 4TL</span>
-				</div>
-			</div>
-
-			<div class="sidebar-title">Trải nghiệm khách hàng</div>
-			<nav class="nav">
-				<button class="nav-button active" data-target="home">
-					<span class="nav-icon">🏠</span>
-					<span class="nav-text">
-						<span class="nav-primary">Trang chủ</span>
-						<span class="nav-secondary">Ưu đãi và thông tin thành viên</span>
-					</span>
-				</button>
-				<button class="nav-button" data-target="catalog">
-					<span class="nav-icon">🛍️</span>
-					<span class="nav-text">
-						<span class="nav-primary">Quét mã & sản phẩm</span>
-						<span class="nav-secondary">Tra cứu theo mã vạch, tên hàng</span>
-					</span>
-				</button>
-				<button class="nav-button" data-target="cart">
-					<span class="nav-icon">🧺</span>
-					<span class="nav-text">
-						<span class="nav-primary">Giỏ hàng</span>
-						<span class="nav-secondary">Hóa đơn và giảm giá</span>
-					</span>
-				</button>
-				<button class="nav-button" data-target="orders">
-					<span class="nav-icon">📦</span>
-					<span class="nav-text">
-						<span class="nav-primary">Hóa đơn & giao dịch</span>
-						<span class="nav-secondary">Xuất thông tin hóa đơn đã ghi nhận</span>
-					</span>
-				</button>
-			</nav>
-
-			<div class="sidebar-bottom">
-				<div class="member-card">
-					<strong>Thành viên: KH0001</strong>
-					<span class="member-name">Dương Hạo Quang • Hạng Gold</span>
-					<div class="member-points" id="member-points-display">5.200 điểm</div>
-					<span class="member-contact">SĐT: 0912 345 689</span>
-					<span class="member-contact">Email: quang@gmail.com</span>
-					<span>Tích 1 điểm cho mỗi 1.000đ</span>
-				</div>
-				<button class="btn-logout" type="button" onclick="window.location.href='dangnhap.html'">Đăng xuất</button>
-			</div>
-		</aside>
-
-		<main class="main">
-			<header class="topbar">
-				<div>
-					<div class="topbar-title" id="current-title">Cổng dữ liệu khách hàng</div>
-					<div class="topbar-badge">4TL Convenience Store</div>
-				</div>
-				<div class="topbar-spacer"></div>
-				<div class="topbar-info">
-					<span class="pill">Xin chào, Quang</span>
-				</div>
-			</header>
-
-			<section class="content">
-				<section class="section active" id="section-home">
-					<div class="grid-3">
-						<div class="card search-card">
-							<div class="card-title">Ưu đãi hôm nay</div>
-							<div class="kpi-value">-15%</div>
-							<div class="kpi-label">Nhóm nước giải khát từ 16:00 - 20:00</div>
-							<div class="kpi-trend up">Áp dụng tự động tại giỏ hàng</div>
-						</div>
-						<div class="card">
-							<div class="card-title">Điểm & hạng khách hàng</div>
-							<div class="kpi-value" id="home-points">5.200</div>
-							<div class="kpi-label">Hạng Gold • Tương đương 52.000đ ưu đãi</div>
-							<div class="kpi-trend up">+320 điểm trong 30 ngày</div>
-						</div>
-						<div class="card">
-							<div class="card-title">Đơn gần nhất</div>
-							<div class="kpi-value">Đang giao</div>
-							<div class="kpi-label">Mã DH240313-052 • 245.000đ</div>
-							<div class="kpi-trend up">Dự kiến đến trước 19:30</div>
-						</div>
-					</div>
-
-					<div class="card">
-						<div class="card-header">
-							<div>
-								<div class="card-title">Sản phẩm gợi ý cho bạn</div>
-							</div>
-							<button class="btn btn-primary" id="go-to-catalog">Mua ngay</button>
-						</div>
-						<div class="table-wrapper">
-							<table>
-								<thead>
-									<tr>
-										<th>Sản phẩm</th>
-										<th>Nhóm hàng</th>
-										<th>Giá</th>
-										<th>Thao tác</th>
-									</tr>
-								</thead>
-								<tbody id="recommend-table-body"></tbody>
-							</table>
-						</div>
-					</div>
-				</section>
-
-				<section class="section" id="section-catalog">
-					<div class="grid-2">
-						<div class="card">
-							<div class="card-header">
-								<div>
-									<div class="card-title">Tìm sản phẩm</div>
-									<div class="card-subtitle">Quét mã vạch / tìm theo tên, nhóm, giá</div>
-								</div>
-							</div>
-							<div class="form-grid">
-								<div class="form-field" style="grid-column: span 2;">
-									<label for="search-name">Tên sản phẩm</label>
-									<input id="search-name" placeholder="Ví dụ: sữa, mì, nước" />
-								</div>
-								<div class="form-field" style="grid-column: span 2;">
-									<label for="search-barcode">Mã vạch sản phẩm</label>
-									<input id="search-barcode" placeholder="Ví dụ: 8938505970001" />
-								</div>
-								<div class="form-field">
-									<label for="search-group">Nhóm hàng</label>
-									<select id="search-group">
-										<option>Tất cả</option>
-										<option>Nước giải khát</option>
-										<option>Thực phẩm</option>
-										<option>Đồ dùng cá nhân</option>
-									</select>
-								</div>
-								<div class="form-field">
-									<label for="search-price">Khoảng giá</label>
-									<select id="search-price">
-										<option value="all">Tất cả</option>
-										<option value="lt20000">Dưới 20.000đ</option>
-										<option value="20to50">20.000đ - 50.000đ</option>
-										<option value="gt50000">Trên 50.000đ</option>
-									</select>
-								</div>
-							</div>
-							<div class="btn-row search-actions">
-								<button class="btn btn-primary" id="search-now-btn" style="padding:5px 12px;">Tìm</button>
-							</div>
-						</div>
-
-						<div class="card">
-							<div class="card-header">
-								<div>
-									<div class="card-title">Tạo đơn hàng tạm</div>
-									<div class="card-subtitle">Lưu dữ liệu nhận hàng trước khi thanh toán hóa đơn</div>
-								</div>
-							</div>
-							<div class="form-grid">
-								<div class="form-field">
-									<label for="quick-recipient">Người nhận</label>
-									<input id="quick-recipient" placeholder="Ví dụ: Nguyễn Văn A" />
-								</div>
-								<div class="form-field">
-									<label for="quick-phone">Số điện thoại nhận hàng</label>
-									<input id="quick-phone" placeholder="Ví dụ: 0901234567" />
-								</div>
-								<div class="form-field" style="grid-column: span 2;">
-									<label for="quick-address">Địa chỉ giao hàng</label>
-									<input id="quick-address" placeholder="Ví dụ: 123 Nguyễn Trãi, Q.1, TP.HCM" />
-								</div>
-								<div class="form-field">
-									<label for="quick-time">Khung giờ mong muốn</label>
-									<select id="quick-time">
-										<option>Không yêu cầu</option>
-										<option>Trước 12:00</option>
-										<option>12:00 - 17:00</option>
-										<option>17:00 - 21:00</option>
-									</select>
-								</div>
-								<div class="form-field">
-									<label for="quick-package">Yêu cầu đóng gói</label>
-									<select id="quick-package">
-										<option>Bình thường</option>
-										<option>Gói quà</option>
-										<option>Hạn chế túi nilon</option>
-									</select>
-								</div>
-								<div class="form-field" style="grid-column: span 2;">
-									<label for="order-note">Ghi chú thêm cho đơn</label>
-									<textarea id="order-note" placeholder="Ví dụ: gọi trước khi đến, để hàng tại bảo vệ..."></textarea>
-								</div>
-							</div>
-							<div class="btn-row">
-								<button class="btn btn-secondary" id="build-order-note">Tạo ghi chú chi tiết</button>
-								<button class="btn btn-secondary" id="clear-filters">Xóa bộ lọc</button>
-								<button class="btn btn-primary" id="go-to-cart">Đến giỏ hàng</button>
-							</div>
-						</div>
-					</div>
-
-					<div class="card" style="margin-top:10px;">
-						<div class="card-header">
-							<div>
-								<div class="card-title">Danh sách sản phẩm</div>
-								<div class="card-subtitle" id="catalog-summary">0 sản phẩm phù hợp</div>
-							</div>
-						</div>
-						<div class="table-wrapper">
-							<table>
-								<thead>
-									<tr>
-										<th>Mã</th>
-										<th>Mã vạch</th>
-										<th>Tên sản phẩm</th>
-										<th>Nhóm</th>
-										<th>Giá bán</th>
-										<th>Tồn kho</th>
-										<th>Thao tác</th>
-									</tr>
-								</thead>
-								<tbody id="product-table-body"></tbody>
-							</table>
-						</div>
-					</div>
-				</section>
-
-				<section class="section" id="section-cart">
-					<div class="grid-2">
-						<div class="card">
-							<div class="card-header">
-								<div>
-									<div class="card-title">Tính toán giỏ hàng</div>
-									<div class="card-subtitle">Cập nhật số lượng để tính tạm hóa đơn</div>
-								</div>
-							</div>
-							<div class="table-wrapper">
-								<table>
-									<thead>
-										<tr>
-											<th>Sản phẩm</th>
-											<th>SL</th>
-											<th>Đơn giá</th>
-											<th>Thành tiền</th>
-											<th>Thao tác</th>
-										</tr>
-									</thead>
-									<tbody id="cart-table-body"></tbody>
-								</table>
-							</div>
-							<div class="empty-note" id="cart-empty-note">Giỏ hàng đang trống. Hãy thêm sản phẩm từ mục Sản phẩm.</div>
-						</div>
-
-						<div class="card">
-							<div class="card-header">
-								<div>
-									<div class="card-title">Thanh toán hóa đơn</div>
-									<div class="card-subtitle">Ghi nhận kết quả thanh toán và giao dịch</div>
-								</div>
-							</div>
-							<div class="form-grid">
-								<div class="form-field">
-									<label for="checkout-channel">Hình thức mua</label>
-									<select id="checkout-channel">
-										<option>Mua qua mạng</option>
-										<option>Mua tại cửa hàng</option>
-									</select>
-								</div>
-								<div class="form-field">
-									<label for="checkout-voucher">Mã giảm giá</label>
-									<input id="checkout-voucher" placeholder="" />
-								</div>
-								<div class="form-field">
-									<label for="checkout-points">Điểm sử dụng</label>
-									<input id="checkout-points" type="number" min="0" step="10" value="0" />
-								</div>
-								<div class="form-field">
-									<label for="checkout-method">Phương thức nhận hàng</label>
-									<select id="checkout-method">
-										<option>Giao tận nơi</option>
-										<option>Nhận tại cửa hàng</option>
-									</select>
-								</div>
-								<div class="form-field">
-									<label for="checkout-payment">Thanh toán</label>
-									<select id="checkout-payment">
-										<option>Tiền mặt</option>
-										<option>Chuyển khoản</option>
-									</select>
-								</div>
-								<div class="form-field">
-									<label for="checkout-cash">Tiền khách thanh toán</label>
-									<input id="checkout-cash" type="number" min="0" step="1000" value="0" />
-								</div>
-								<div class="form-field">
-									<label for="checkout-change">Tiền thừa</label>
-									<input id="checkout-change" value="0đ" disabled />
-								</div>
-							</div>
-
-							<div class="total-box">
-								<span>Tạm tính</span>
-								<span id="total-subtotal">0đ</span>
-								<span>Giảm giá voucher</span>
-								<span id="total-voucher">0đ</span>
-								<span>Quy đổi điểm</span>
-								<span id="total-points">0đ</span>
-								<strong>Tổng thanh toán</strong>
-								<strong id="total-final">0đ</strong>
-							</div>
-
-							<div class="btn-row">
-								<button class="btn btn-primary" id="place-order-btn">Đặt hàng</button>
-								<button class="btn btn-danger" id="clear-cart-btn">Xóa giỏ hàng</button>
-							</div>
-						</div>
-					</div>
-				</section>
-
-				<section class="section" id="section-orders">
-					<div class="card">
-						<div class="card-header">
-							<div>
-								<div class="card-title">Xuất thông tin hóa đơn</div>
-							</div>
-						</div>
-						<div class="table-wrapper">
-							<table>
-								<thead>
-									<tr>
-										<th>Mã đơn</th>
-										<th>Mã giao dịch</th>
-										<th>Ngày đặt</th>
-										<th>Hình thức mua</th>
-										<th>Sản phẩm đã mua</th>
-										<th>Tổng tiền</th>
-										<th>Đã thu</th>
-										<th>Tiền thừa</th>
-										<th>Ghi chú đơn</th>
-										<th>Trạng thái</th>
-									</tr>
-								</thead>
-								<tbody id="invoice-table-body"></tbody>
-							</table>
-						</div>
-					</div>
-				</section>
-			</section>
-		</main>
-	</div>
-
-	<script>
-		const navButtons = document.querySelectorAll('.nav-button');
-		const sections = {
-			home: document.getElementById('section-home'),
-			catalog: document.getElementById('section-catalog'),
-			cart: document.getElementById('section-cart'),
-			orders: document.getElementById('section-orders')
-		};
-
-		const titleMap = {
-			home: 'Cổng dữ liệu khách hàng',
-			catalog: 'Quét mã & sản phẩm',
-			cart: 'Tính toán giỏ hàng & thanh toán',
-			orders: 'Hóa đơn & giao dịch'
-		};
-
-		const currentTitle = document.getElementById('current-title');
-		const formatCurrency = (value) => `${new Intl.NumberFormat('vi-VN').format(Math.round(value || 0))}đ`;
-		const formatNumber = (value) => new Intl.NumberFormat('vi-VN').format(Number(value) || 0);
-
-		const productState = [
-			{ id: 'SP1001', barcode: '8938505970001', image: 'https://dummyimage.com/84x84/e0f2fe/1e3a8a.png&text=S%E1%BB%AFa', name: 'Sữa tươi không đường 1L', group: 'Thực phẩm', price: 33000, stock: 42 },
-			{ id: 'SP1002', barcode: '8938505970002', image: 'https://dummyimage.com/84x84/fef3c7/7c2d12.png&text=M%C3%AC', name: 'Mì ly hải sản', group: 'Thực phẩm', price: 10000, stock: 120 },
-			{ id: 'SP1003', barcode: '8938505970003', image: 'https://dummyimage.com/84x84/fee2e2/9f1239.png&text=Cam', name: 'Nước cam ép 1L', group: 'Nước giải khát', price: 42000, stock: 35 },
-			{ id: 'SP1004', barcode: '8938505970004', image: 'https://dummyimage.com/84x84/dbeafe/1d4ed8.png&text=H2O', name: 'Nước suối 500ml', group: 'Nước giải khát', price: 5000, stock: 180 },
-			{ id: 'SP1005', barcode: '8938505970005', image: 'https://dummyimage.com/84x84/f3e8ff/6b21a8.png&text=G%E1%BB%99i', name: 'Dầu gội mini 80ml', group: 'Đồ dùng cá nhân', price: 28000, stock: 20 },
-			{ id: 'SP1006', barcode: '8938505970006', image: 'https://dummyimage.com/84x84/ecfeff/155e75.png&text=Gi%E1%BA%A5y', name: 'Khăn giấy bỏ túi', group: 'Đồ dùng cá nhân', price: 12000, stock: 78 }
-		];
-
-		const cartState = [
-			{ id: 'SP1002', name: 'Mì ly hải sản', price: 10000, qty: 2 },
-			{ id: 'SP1004', name: 'Nước suối 500ml', price: 5000, qty: 4 },
-			{ id: 'SP1006', name: 'Khăn giấy bỏ túi', price: 12000, qty: 1 }
-		];
-		const orderState = [
-			{ id: 'DH240313-052', date: '13/03/2026 17:30', channel: 'Mua qua mạng', items: 6, products: 'Mì ly hải sản x3, Nước suối 500ml x2, Khăn giấy bỏ túi x1', total: 245000, status: 'Đang giao' },
-			{ id: 'DH240312-041', date: '12/03/2026 20:12', channel: 'Mua tại cửa hàng', items: 3, products: 'Sữa tươi không đường 1L x1, Dầu gội mini 80ml x2', total: 96000, status: 'Hoàn tất' },
-			{ id: 'DH240311-029', date: '11/03/2026 20:18', channel: 'Mua qua mạng', items: 4, products: 'Nước cam ép 1L x1, Nước suối 500ml x3', total: 118000, status: 'Hoàn tất' },
-			{ id: 'DH240309-014', date: '09/03/2026 10:05', channel: 'Mua tại cửa hàng', items: 2, products: 'Khăn giấy bỏ túi x1, Mì ly hải sản x1', total: 43000, status: 'Hoàn tất' }
-		];
-
-		const transactionState = [
-			{ id: 'GD240313-052', channel: 'Mua qua mạng', paid: 300000, change: 55000, note: 'Giao trước 19:30' },
-			{ id: 'GD240312-041', channel: 'Mua tại cửa hàng', paid: 100000, change: 4000, note: 'Khách lấy tại quầy' },
-			{ id: 'GD240311-029', channel: 'Mua qua mạng', paid: 120000, change: 2000, note: 'Gọi trước khi giao' },
-			{ id: 'GD240309-014', channel: 'Mua tại cửa hàng', paid: 50000, change: 7000, note: '' }
-		];
-
-		let memberPoints = 5200;
-
-		const ui = {
-			searchName: document.getElementById('search-name'),
-			searchBarcode: document.getElementById('search-barcode'),
-			searchGroup: document.getElementById('search-group'),
-			searchPrice: document.getElementById('search-price'),
-			productTableBody: document.getElementById('product-table-body'),
-			catalogSummary: document.getElementById('catalog-summary'),
-			recommendTableBody: document.getElementById('recommend-table-body'),
-			cartTableBody: document.getElementById('cart-table-body'),
-			cartEmptyNote: document.getElementById('cart-empty-note'),
-			voucher: document.getElementById('checkout-voucher'),
-			points: document.getElementById('checkout-points'),
-			channel: document.getElementById('checkout-channel'),
-			cash: document.getElementById('checkout-cash'),
-			change: document.getElementById('checkout-change'),
-			totalSubtotal: document.getElementById('total-subtotal'),
-			totalVoucher: document.getElementById('total-voucher'),
-			totalPoints: document.getElementById('total-points'),
-			totalFinal: document.getElementById('total-final'),
-			invoiceTableBody: document.getElementById('invoice-table-body'),
-			quickRecipient: document.getElementById('quick-recipient'),
-			quickPhone: document.getElementById('quick-phone'),
-			quickAddress: document.getElementById('quick-address'),
-			quickTime: document.getElementById('quick-time'),
-			quickPackage: document.getElementById('quick-package'),
-			buildOrderNoteBtn: document.getElementById('build-order-note'),
-			orderNote: document.getElementById('order-note'),
-			paymentType: document.getElementById('checkout-payment'),
-			memberPointsDisplay: document.getElementById('member-points-display'),
-			homePoints: document.getElementById('home-points')
-		};
-
-		const buildOrderNoteFromQuickForm = () => {
-			const recipient = (ui.quickRecipient.value || '').trim();
-			const phone = (ui.quickPhone.value || '').trim();
-			const address = (ui.quickAddress.value || '').trim();
-			const timeSlot = (ui.quickTime.value || '').trim();
-			const packageRequest = (ui.quickPackage.value || '').trim();
-			const extraNote = (ui.orderNote.value || '').trim();
-
-			const segments = [];
-			if (recipient) segments.push(`Người nhận: ${recipient}`);
-			if (phone) segments.push(`SĐT: ${phone}`);
-			if (address) segments.push(`Địa chỉ: ${address}`);
-			if (timeSlot && timeSlot !== 'Không yêu cầu') segments.push(`Khung giờ: ${timeSlot}`);
-			if (packageRequest && packageRequest !== 'Bình thường') segments.push(`Đóng gói: ${packageRequest}`);
-			if (extraNote) segments.push(`Lưu ý: ${extraNote}`);
-
-			ui.orderNote.value = segments.join(' | ');
-		};
-
-		const gotoSection = (target) => {
-			if (!sections[target]) return;
-			navButtons.forEach((button) => {
-				const isActive = button.getAttribute('data-target') === target;
-				button.classList.toggle('active', isActive);
-			});
-			Object.values(sections).forEach((section) => section.classList.remove('active'));
-			sections[target].classList.add('active');
-			currentTitle.textContent = titleMap[target];
-		};
-
-		navButtons.forEach((button) => {
-			button.addEventListener('click', () => gotoSection(button.getAttribute('data-target')));
-		});
-
-		const filteredProducts = () => {
-			const name = (ui.searchName.value || '').trim().toLowerCase();
-			const barcode = (ui.searchBarcode.value || '').trim();
-			const group = ui.searchGroup.value;
-			const price = ui.searchPrice.value;
-
-			return productState.filter((item) => {
-				const matchName = !name || item.name.toLowerCase().includes(name);
-				const matchBarcode = !barcode || item.barcode.includes(barcode);
-				const matchGroup = group === 'Tất cả' || item.group === group;
-				let matchPrice = true;
-				if (price === 'lt20000') matchPrice = item.price < 20000;
-				if (price === '20to50') matchPrice = item.price >= 20000 && item.price <= 50000;
-				if (price === 'gt50000') matchPrice = item.price > 50000;
-				return matchName && matchBarcode && matchGroup && matchPrice;
-			});
-		};
-
-		const renderCatalog = () => {
-			const items = filteredProducts();
-			ui.catalogSummary.textContent = `${items.length} sản phẩm phù hợp`;
-			ui.productTableBody.innerHTML = items
-				.map((item) => `
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4TL - Cổng khách hàng</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --accent: #f97316;
+        --bg: #f3f4f6;
+        --border: #d1d5db;
+        --text: #111827;
+        --text-soft: #6b7280;
+        --success: #15803d;
+        --danger: #b91c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: radial-gradient(
+          circle at top,
+          #e5f0ff 0,
+          #f9fafb 42%,
+          #f3f4f6 100%
+        );
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: linear-gradient(180deg, #ffffff, #f9fafb 50%, #e5e7eb);
+        border-right: 1px solid var(--border);
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.4);
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand-title {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .brand-subtitle {
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      .sidebar-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-soft);
+        margin: 2px 4px 4px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .nav-button {
+        border: none;
+        background: transparent;
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 10px;
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        text-align: left;
+        cursor: pointer;
+        color: var(--text-soft);
+        transition: all 0.15s ease-out;
+      }
+
+      .nav-button:hover:not(.active) {
+        background: #eff6ff;
+        color: var(--text);
+      }
+
+      .nav-button.active {
+        background: radial-gradient(circle at top left, #dbeafe, #eff6ff);
+        color: var(--text);
+      }
+
+      .nav-icon {
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+        border: 1px solid #bfdbfe;
+      }
+
+      .nav-button.active .nav-icon {
+        background: linear-gradient(135deg, var(--primary), #4f46e5);
+        border-color: var(--primary);
+        color: #f9fafb;
+      }
+
+      .nav-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .nav-primary {
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .nav-secondary {
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      .member-card {
+        border-radius: 12px;
+        border: 1px solid #bfdbfe;
+        background: linear-gradient(145deg, #dbeafe, #eff6ff);
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      .sidebar-bottom {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .btn-logout {
+        align-self: flex-start;
+        border-radius: 999px;
+        border: 1px solid rgba(248, 113, 113, 0.8);
+        background: rgba(248, 113, 113, 0.12);
+        color: var(--danger);
+        padding: 7px 14px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .member-card strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .member-name {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+
+      .member-points {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 6px 0;
+      }
+
+      .member-contact {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 500;
+        line-height: 1.45;
+        color: #334155;
+        margin-top: 2px;
+      }
+
+      .main {
+        padding: 16px 18px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .topbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .topbar-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .topbar-badge {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: var(--text-soft);
+      }
+
+      .topbar-spacer {
+        flex: 1;
+      }
+
+      .topbar-info {
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+
+      .pill {
+        border-radius: 999px;
+        padding: 4px 10px;
+        border: 1px solid var(--border);
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .section {
+        display: none;
+      }
+
+      .section.active {
+        display: block;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        background: radial-gradient(
+          circle at top left,
+          #e0f2fe 0,
+          #ffffff 60%,
+          #f9fafb 100%
+        );
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+      }
+
+      .search-card {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .search-card .form-grid {
+        flex: 1;
+      }
+
+      .search-actions {
+        margin-top: auto;
+        justify-content: flex-end;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .card-title {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .card-subtitle {
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      .kpi-value {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .kpi-label {
+        font-size: 11px;
+        color: var(--text-soft);
+        margin-top: 2px;
+      }
+
+      .kpi-trend {
+        font-size: 11px;
+        margin-top: 4px;
+      }
+
+      .kpi-trend.up {
+        color: var(--success);
+      }
+
+      .table-wrapper {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #ffffff;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background: #f3f4f6;
+        color: var(--text-soft);
+        font-weight: 500;
+        border-bottom: 1px solid var(--border);
+      }
+
+      tbody tr:nth-child(even) {
+        background: #f9fafb;
+      }
+
+      tbody tr:hover {
+        background: #dbeafe;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 10px;
+      }
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      label {
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      input,
+      select,
+      textarea {
+        background: #f9fafb;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 8px;
+        font-size: 12px;
+        font-family: inherit;
+        color: var(--text);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 58px;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 1px solid rgba(59, 130, 246, 0.8);
+        border-color: rgba(59, 130, 246, 0.8);
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        border-radius: 999px;
+        border: 1px solid transparent;
+        padding: 7px 14px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        border-color: rgba(59, 130, 246, 0.9);
+        color: #f9fafb;
+      }
+
+      .btn-secondary {
+        background: #e5e7eb;
+        border-color: #d1d5db;
+        color: var(--text);
+      }
+
+      .btn-danger {
+        background: rgba(248, 113, 113, 0.12);
+        border-color: rgba(248, 113, 113, 0.8);
+        color: var(--danger);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-size: 10px;
+      }
+
+      .status-pill.success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-pill.pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .total-box {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px;
+        margin-top: 10px;
+        font-size: 12px;
+      }
+
+      .flow-note {
+        font-size: 11px;
+        color: var(--text-soft);
+        margin-top: 8px;
+      }
+
+      .total-box strong {
+        font-size: 15px;
+      }
+
+      .empty-note {
+        font-size: 12px;
+        color: var(--text-soft);
+        padding: 10px;
+        text-align: center;
+      }
+
+      .quick-note-tip {
+        font-size: 11px;
+        color: var(--text-soft);
+        margin-top: 6px;
+      }
+
+      .badge {
+        font-size: 10px;
+        border-radius: 999px;
+        padding: 2px 8px;
+        background: #e5e7eb;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        color: #374151;
+      }
+
+      @media (max-width: 980px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+          padding-bottom: 10px;
+        }
+
+        .nav {
+          flex-direction: row;
+          overflow-x: auto;
+        }
+
+        .nav-button {
+          min-width: 210px;
+        }
+
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar-bottom {
+          margin-top: 2px;
+        }
+      }
+
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .toast {
+        background: white;
+        border-radius: 8px;
+        padding: 16px 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateX(120%);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast-icon {
+        color: var(--success);
+        font-size: 24px;
+      }
+
+      .toast-content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .toast-title {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+
+      .toast-message {
+        font-size: 14px;
+        color: var(--text-soft);
+      }
+
+      .admin-fab {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        height: 48px;
+        width: 48px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        color: #f8fafc;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 0 14px;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.35);
+        cursor: pointer;
+        overflow: hidden;
+        z-index: 9998;
+        transition:
+          width 0.3s ease,
+          transform 0.2s ease;
+      }
+
+      .admin-fab:hover {
+        width: 190px;
+        transform: translateY(-1px);
+      }
+
+      .admin-fab-icon {
+        font-size: 19px;
+        line-height: 1;
+        min-width: 20px;
+      }
+
+      .admin-fab-label {
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translateX(8px);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .admin-fab:hover .admin-fab-label {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      @media (max-width: 980px) {
+        .admin-fab:hover {
+          width: 48px;
+        }
+
+        .admin-fab:active {
+          width: 178px;
+        }
+
+        .admin-fab:active .admin-fab-label {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-logo">4TL</div>
+          <div class="brand-text">
+            <span class="brand-title">Customer</span>
+            <span class="brand-subtitle">Mua sắm nhanh tại 4TL</span>
+          </div>
+        </div>
+
+        <div class="sidebar-title">Trải nghiệm khách hàng</div>
+        <nav class="nav">
+          <button class="nav-button active" data-target="home">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">
+              <span class="nav-primary">Trang chủ</span>
+              <span class="nav-secondary">Ưu đãi và thông tin thành viên</span>
+            </span>
+          </button>
+          <button class="nav-button" data-target="catalog">
+            <span class="nav-icon">🛍️</span>
+            <span class="nav-text">
+              <span class="nav-primary">Quét mã & sản phẩm</span>
+              <span class="nav-secondary">Tra cứu theo mã vạch, tên hàng</span>
+            </span>
+          </button>
+          <button class="nav-button" data-target="cart">
+            <span class="nav-icon">🧺</span>
+            <span class="nav-text">
+              <span class="nav-primary">Giỏ hàng</span>
+              <span class="nav-secondary">Hóa đơn và giảm giá</span>
+            </span>
+          </button>
+          <button class="nav-button" data-target="orders">
+            <span class="nav-icon">📦</span>
+            <span class="nav-text">
+              <span class="nav-primary">Hóa đơn & giao dịch</span>
+              <span class="nav-secondary"
+                >Xuất thông tin hóa đơn đã ghi nhận</span
+              >
+            </span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="member-card">
+            <strong id="member-code">Thành viên: KH0001</strong>
+            <span class="member-name" id="member-name"
+              >Dương Hạo Quang • Hạng Gold</span
+            >
+            <div class="member-points" id="member-points-display">
+              5.200 điểm
+            </div>
+            <span class="member-contact" id="member-phone"
+              >SĐT: 0912 345 689</span
+            >
+            <span class="member-contact" id="member-email"
+              >Email: quang@gmail.com</span
+            >
+            <span>Tích 1 điểm cho mỗi 1.000đ</span>
+          </div>
+          <button
+            class="btn-logout"
+            type="button"
+            onclick="window.location.href = 'dangnhap.html'"
+          >
+            Đăng xuất
+          </button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <div class="topbar-title" id="current-title">
+              Cổng dữ liệu khách hàng
+            </div>
+            <div class="topbar-badge">4TL Convenience Store</div>
+          </div>
+          <div class="topbar-spacer"></div>
+          <div class="topbar-info">
+            <span class="pill" id="topbar-greeting">Xin chào, Quang</span>
+          </div>
+        </header>
+
+        <section class="content">
+          <section class="section active" id="section-home">
+            <div class="grid-3">
+              <div class="card search-card">
+                <div class="card-title">Ưu đãi hôm nay</div>
+                <div class="kpi-value">-15%</div>
+                <div class="kpi-label">
+                  Nhóm nước giải khát từ 16:00 - 20:00
+                </div>
+                <div class="kpi-trend up">Áp dụng tự động tại giỏ hàng</div>
+              </div>
+              <div class="card">
+                <div class="card-title">Điểm & hạng khách hàng</div>
+                <div class="kpi-value" id="home-points">5.200</div>
+                <div class="kpi-label">
+                  Hạng Gold • Tương đương 52.000đ ưu đãi
+                </div>
+                <div class="kpi-trend up">+320 điểm trong 30 ngày</div>
+              </div>
+              <div class="card">
+                <div class="card-title">Đơn gần nhất</div>
+                <div class="kpi-value">Đang giao</div>
+                <div class="kpi-label">Mã DH240313-052 • 245.000đ</div>
+                <div class="kpi-trend up">Dự kiến đến trước 19:30</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Sản phẩm gợi ý cho bạn</div>
+                </div>
+                <button class="btn btn-primary" id="go-to-catalog">
+                  Mua ngay
+                </button>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Sản phẩm</th>
+                      <th>Nhóm hàng</th>
+                      <th>Giá</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recommend-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="section-catalog">
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Tìm sản phẩm</div>
+                    <div class="card-subtitle">
+                      Quét mã vạch / tìm theo tên, nhóm, giá
+                    </div>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-field" style="grid-column: span 2">
+                    <label for="search-name">Tên sản phẩm</label>
+                    <input
+                      id="search-name"
+                      placeholder="Ví dụ: sữa, mì, nước"
+                    />
+                  </div>
+                  <div class="form-field" style="grid-column: span 2">
+                    <label for="search-barcode">Mã vạch sản phẩm</label>
+                    <input
+                      id="search-barcode"
+                      placeholder="Ví dụ: 8938505970001"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="search-group">Nhóm hàng</label>
+                    <select id="search-group">
+                      <option>Tất cả</option>
+                      <option>Nước giải khát</option>
+                      <option>Thực phẩm</option>
+                      <option>Đồ dùng cá nhân</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="search-price">Khoảng giá</label>
+                    <select id="search-price">
+                      <option value="all">Tất cả</option>
+                      <option value="lt20000">Dưới 20.000đ</option>
+                      <option value="20to50">20.000đ - 50.000đ</option>
+                      <option value="gt50000">Trên 50.000đ</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="btn-row search-actions">
+                  <button
+                    class="btn btn-primary"
+                    id="search-now-btn"
+                    style="padding: 5px 12px"
+                  >
+                    Tìm
+                  </button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Tạo đơn hàng tạm</div>
+                    <div class="card-subtitle">
+                      Lưu dữ liệu nhận hàng trước khi thanh toán hóa đơn
+                    </div>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label for="quick-recipient">Người nhận</label>
+                    <input
+                      id="quick-recipient"
+                      placeholder="Ví dụ: Nguyễn Văn A"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="quick-phone">Số điện thoại nhận hàng</label>
+                    <input id="quick-phone" placeholder="Ví dụ: 0901234567" />
+                  </div>
+                  <div class="form-field" style="grid-column: span 2">
+                    <label for="quick-address">Địa chỉ giao hàng</label>
+                    <input
+                      id="quick-address"
+                      placeholder="Ví dụ: 123 Nguyễn Trãi, Q.1, TP.HCM"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="quick-time">Khung giờ mong muốn</label>
+                    <select id="quick-time">
+                      <option>Không yêu cầu</option>
+                      <option>Trước 12:00</option>
+                      <option>12:00 - 17:00</option>
+                      <option>17:00 - 21:00</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="quick-package">Yêu cầu đóng gói</label>
+                    <select id="quick-package">
+                      <option>Bình thường</option>
+                      <option>Gói quà</option>
+                      <option>Hạn chế túi nilon</option>
+                    </select>
+                  </div>
+                  <div class="form-field" style="grid-column: span 2">
+                    <label for="order-note">Ghi chú thêm cho đơn</label>
+                    <textarea
+                      id="order-note"
+                      placeholder="Ví dụ: gọi trước khi đến, để hàng tại bảo vệ..."
+                    ></textarea>
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-secondary" id="build-order-note">
+                    Tạo ghi chú chi tiết
+                  </button>
+                  <button class="btn btn-secondary" id="clear-filters">
+                    Xóa bộ lọc
+                  </button>
+                  <button class="btn btn-primary" id="go-to-cart">
+                    Đến giỏ hàng
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 10px">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Danh sách sản phẩm</div>
+                  <div class="card-subtitle" id="catalog-summary">
+                    0 sản phẩm phù hợp
+                  </div>
+                </div>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Mã vạch</th>
+                      <th>Tên sản phẩm</th>
+                      <th>Nhóm</th>
+                      <th>Giá bán</th>
+                      <th>Tồn kho</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="product-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="section-cart">
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Tính toán giỏ hàng</div>
+                    <div class="card-subtitle">
+                      Cập nhật số lượng để tính tạm hóa đơn
+                    </div>
+                  </div>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Sản phẩm</th>
+                        <th>SL</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                        <th>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cart-table-body"></tbody>
+                  </table>
+                </div>
+                <div class="empty-note" id="cart-empty-note">
+                  Giỏ hàng đang trống. Hãy thêm sản phẩm từ mục Sản phẩm.
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Thanh toán hóa đơn</div>
+                    <div class="card-subtitle">
+                      Ghi nhận kết quả thanh toán và giao dịch
+                    </div>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label for="checkout-channel">Hình thức mua</label>
+                    <select id="checkout-channel">
+                      <option>Mua qua mạng</option>
+                      <option>Mua tại cửa hàng</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="checkout-voucher">Mã giảm giá</label>
+                    <input id="checkout-voucher" placeholder="" />
+                  </div>
+                  <div class="form-field">
+                    <label for="checkout-points">Điểm sử dụng</label>
+                    <input
+                      id="checkout-points"
+                      type="number"
+                      min="0"
+                      step="10"
+                      value="0"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="checkout-method">Phương thức nhận hàng</label>
+                    <select id="checkout-method">
+                      <option>Giao tận nơi</option>
+                      <option>Nhận tại cửa hàng</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="checkout-payment">Thanh toán</label>
+                    <select id="checkout-payment">
+                      <option>Tiền mặt</option>
+                      <option>Chuyển khoản</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="checkout-cash">Tiền khách thanh toán</label>
+                    <input
+                      id="checkout-cash"
+                      type="number"
+                      min="0"
+                      step="1000"
+                      value="0"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="checkout-change">Tiền thừa</label>
+                    <input id="checkout-change" value="0đ" disabled />
+                  </div>
+                </div>
+
+                <div class="total-box">
+                  <span>Tạm tính</span>
+                  <span id="total-subtotal">0đ</span>
+                  <span>Giảm giá voucher</span>
+                  <span id="total-voucher">0đ</span>
+                  <span>Quy đổi điểm</span>
+                  <span id="total-points">0đ</span>
+                  <strong>Tổng thanh toán</strong>
+                  <strong id="total-final">0đ</strong>
+                </div>
+
+                <div class="btn-row">
+                  <button class="btn btn-primary" id="place-order-btn">
+                    Đặt hàng
+                  </button>
+                  <button class="btn btn-danger" id="clear-cart-btn">
+                    Xóa giỏ hàng
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="section-orders">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Xuất thông tin hóa đơn</div>
+                </div>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mã đơn</th>
+                      <th>Mã giao dịch</th>
+                      <th>Ngày đặt</th>
+                      <th>Hình thức mua</th>
+                      <th>Sản phẩm đã mua</th>
+                      <th>Tổng tiền</th>
+                      <th>Đã thu</th>
+                      <th>Tiền thừa</th>
+                      <th>Ghi chú đơn</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoice-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <button
+      class="admin-fab"
+      id="to-admin-btn"
+      type="button"
+      title="Đến với admin"
+    >
+      <span class="admin-fab-icon">🛠️</span>
+      <span class="admin-fab-label">Đến với admin</span>
+    </button>
+
+    <script>
+      const navButtons = document.querySelectorAll(".nav-button");
+      const sections = {
+        home: document.getElementById("section-home"),
+        catalog: document.getElementById("section-catalog"),
+        cart: document.getElementById("section-cart"),
+        orders: document.getElementById("section-orders"),
+      };
+
+      const titleMap = {
+        home: "Cổng dữ liệu khách hàng",
+        catalog: "Quét mã & sản phẩm",
+        cart: "Tính toán giỏ hàng & thanh toán",
+        orders: "Hóa đơn & giao dịch",
+      };
+
+      const currentTitle = document.getElementById("current-title");
+      const formatCurrency = (value) =>
+        `${new Intl.NumberFormat("vi-VN").format(Math.round(value || 0))}đ`;
+      const formatNumber = (value) =>
+        new Intl.NumberFormat("vi-VN").format(Number(value) || 0);
+
+      const productState = [
+        {
+          id: "SP1001",
+          barcode: "8938505970001",
+          image:
+            "https://dummyimage.com/84x84/e0f2fe/1e3a8a.png&text=S%E1%BB%AFa",
+          name: "Sữa tươi không đường 1L",
+          group: "Thực phẩm",
+          price: 33000,
+          stock: 42,
+        },
+        {
+          id: "SP1002",
+          barcode: "8938505970002",
+          image: "https://dummyimage.com/84x84/fef3c7/7c2d12.png&text=M%C3%AC",
+          name: "Mì ly hải sản",
+          group: "Thực phẩm",
+          price: 10000,
+          stock: 120,
+        },
+        {
+          id: "SP1003",
+          barcode: "8938505970003",
+          image: "https://dummyimage.com/84x84/fee2e2/9f1239.png&text=Cam",
+          name: "Nước cam ép 1L",
+          group: "Nước giải khát",
+          price: 42000,
+          stock: 35,
+        },
+        {
+          id: "SP1004",
+          barcode: "8938505970004",
+          image: "https://dummyimage.com/84x84/dbeafe/1d4ed8.png&text=H2O",
+          name: "Nước suối 500ml",
+          group: "Nước giải khát",
+          price: 5000,
+          stock: 180,
+        },
+        {
+          id: "SP1005",
+          barcode: "8938505970005",
+          image:
+            "https://dummyimage.com/84x84/f3e8ff/6b21a8.png&text=G%E1%BB%99i",
+          name: "Dầu gội mini 80ml",
+          group: "Đồ dùng cá nhân",
+          price: 28000,
+          stock: 20,
+        },
+        {
+          id: "SP1006",
+          barcode: "8938505970006",
+          image:
+            "https://dummyimage.com/84x84/ecfeff/155e75.png&text=Gi%E1%BA%A5y",
+          name: "Khăn giấy bỏ túi",
+          group: "Đồ dùng cá nhân",
+          price: 12000,
+          stock: 78,
+        },
+      ];
+
+      const cartState = [
+        { id: "SP1002", name: "Mì ly hải sản", price: 10000, qty: 2 },
+        { id: "SP1004", name: "Nước suối 500ml", price: 5000, qty: 4 },
+        { id: "SP1006", name: "Khăn giấy bỏ túi", price: 12000, qty: 1 },
+      ];
+      const orderState = [
+        {
+          id: "DH240313-052",
+          date: "13/03/2026 17:30",
+          channel: "Mua qua mạng",
+          items: 6,
+          products: "Mì ly hải sản x3, Nước suối 500ml x2, Khăn giấy bỏ túi x1",
+          total: 245000,
+          status: "Đang giao",
+        },
+        {
+          id: "DH240312-041",
+          date: "12/03/2026 20:12",
+          channel: "Mua tại cửa hàng",
+          items: 3,
+          products: "Sữa tươi không đường 1L x1, Dầu gội mini 80ml x2",
+          total: 96000,
+          status: "Hoàn tất",
+        },
+        {
+          id: "DH240311-029",
+          date: "11/03/2026 20:18",
+          channel: "Mua qua mạng",
+          items: 4,
+          products: "Nước cam ép 1L x1, Nước suối 500ml x3",
+          total: 118000,
+          status: "Hoàn tất",
+        },
+        {
+          id: "DH240309-014",
+          date: "09/03/2026 10:05",
+          channel: "Mua tại cửa hàng",
+          items: 2,
+          products: "Khăn giấy bỏ túi x1, Mì ly hải sản x1",
+          total: 43000,
+          status: "Hoàn tất",
+        },
+      ];
+
+      const transactionState = [
+        {
+          id: "GD240313-052",
+          channel: "Mua qua mạng",
+          paid: 300000,
+          change: 55000,
+          note: "Giao trước 19:30",
+        },
+        {
+          id: "GD240312-041",
+          channel: "Mua tại cửa hàng",
+          paid: 100000,
+          change: 4000,
+          note: "Khách lấy tại quầy",
+        },
+        {
+          id: "GD240311-029",
+          channel: "Mua qua mạng",
+          paid: 120000,
+          change: 2000,
+          note: "Gọi trước khi giao",
+        },
+        {
+          id: "GD240309-014",
+          channel: "Mua tại cửa hàng",
+          paid: 50000,
+          change: 7000,
+          note: "",
+        },
+      ];
+
+      let memberPoints = 5200;
+
+      const ui = {
+        searchName: document.getElementById("search-name"),
+        searchBarcode: document.getElementById("search-barcode"),
+        searchGroup: document.getElementById("search-group"),
+        searchPrice: document.getElementById("search-price"),
+        productTableBody: document.getElementById("product-table-body"),
+        catalogSummary: document.getElementById("catalog-summary"),
+        recommendTableBody: document.getElementById("recommend-table-body"),
+        cartTableBody: document.getElementById("cart-table-body"),
+        cartEmptyNote: document.getElementById("cart-empty-note"),
+        voucher: document.getElementById("checkout-voucher"),
+        points: document.getElementById("checkout-points"),
+        channel: document.getElementById("checkout-channel"),
+        cash: document.getElementById("checkout-cash"),
+        change: document.getElementById("checkout-change"),
+        totalSubtotal: document.getElementById("total-subtotal"),
+        totalVoucher: document.getElementById("total-voucher"),
+        totalPoints: document.getElementById("total-points"),
+        totalFinal: document.getElementById("total-final"),
+        invoiceTableBody: document.getElementById("invoice-table-body"),
+        quickRecipient: document.getElementById("quick-recipient"),
+        quickPhone: document.getElementById("quick-phone"),
+        quickAddress: document.getElementById("quick-address"),
+        quickTime: document.getElementById("quick-time"),
+        quickPackage: document.getElementById("quick-package"),
+        buildOrderNoteBtn: document.getElementById("build-order-note"),
+        orderNote: document.getElementById("order-note"),
+        paymentType: document.getElementById("checkout-payment"),
+        memberPointsDisplay: document.getElementById("member-points-display"),
+        homePoints: document.getElementById("home-points"),
+        memberCode: document.getElementById("member-code"),
+        memberName: document.getElementById("member-name"),
+        memberPhone: document.getElementById("member-phone"),
+        memberEmail: document.getElementById("member-email"),
+        topbarGreeting: document.getElementById("topbar-greeting"),
+      };
+
+      let activeCustomer = {
+        id: "KH0001",
+        name: "Dương Hạo Quang",
+        phone: "0912 345 689",
+        email: "quang@gmail.com",
+        points: 5200,
+        tier: "Gold",
+      };
+
+      const buildOrderNoteFromQuickForm = () => {
+        const recipient = (ui.quickRecipient.value || "").trim();
+        const phone = (ui.quickPhone.value || "").trim();
+        const address = (ui.quickAddress.value || "").trim();
+        const timeSlot = (ui.quickTime.value || "").trim();
+        const packageRequest = (ui.quickPackage.value || "").trim();
+        const extraNote = (ui.orderNote.value || "").trim();
+
+        const segments = [];
+        if (recipient) segments.push(`Người nhận: ${recipient}`);
+        if (phone) segments.push(`SĐT: ${phone}`);
+        if (address) segments.push(`Địa chỉ: ${address}`);
+        if (timeSlot && timeSlot !== "Không yêu cầu")
+          segments.push(`Khung giờ: ${timeSlot}`);
+        if (packageRequest && packageRequest !== "Bình thường")
+          segments.push(`Đóng gói: ${packageRequest}`);
+        if (extraNote) segments.push(`Lưu ý: ${extraNote}`);
+
+        ui.orderNote.value = segments.join(" | ");
+      };
+
+      const gotoSection = (target) => {
+        if (!sections[target]) return;
+        navButtons.forEach((button) => {
+          const isActive = button.getAttribute("data-target") === target;
+          button.classList.toggle("active", isActive);
+        });
+        Object.values(sections).forEach((section) =>
+          section.classList.remove("active"),
+        );
+        sections[target].classList.add("active");
+        currentTitle.textContent = titleMap[target];
+      };
+
+      navButtons.forEach((button) => {
+        button.addEventListener("click", () =>
+          gotoSection(button.getAttribute("data-target")),
+        );
+      });
+
+      const filteredProducts = () => {
+        const name = (ui.searchName.value || "").trim().toLowerCase();
+        const barcode = (ui.searchBarcode.value || "").trim();
+        const group = ui.searchGroup.value;
+        const price = ui.searchPrice.value;
+
+        return productState.filter((item) => {
+          const matchName = !name || item.name.toLowerCase().includes(name);
+          const matchBarcode = !barcode || item.barcode.includes(barcode);
+          const matchGroup = group === "Tất cả" || item.group === group;
+          let matchPrice = true;
+          if (price === "lt20000") matchPrice = item.price < 20000;
+          if (price === "20to50")
+            matchPrice = item.price >= 20000 && item.price <= 50000;
+          if (price === "gt50000") matchPrice = item.price > 50000;
+          return matchName && matchBarcode && matchGroup && matchPrice;
+        });
+      };
+
+      const renderCatalog = () => {
+        const items = filteredProducts();
+        ui.catalogSummary.textContent = `${items.length} sản phẩm phù hợp`;
+        ui.productTableBody.innerHTML = items
+          .map(
+            (item) => `
 					<tr>
 						<td>${item.id}</td>
 						<td>${item.barcode}</td>
@@ -1037,85 +1395,113 @@
 						<td>${item.stock}</td>
 						<td><button class="btn btn-primary" data-add-id="${item.id}" style="padding:4px 10px;">Thêm</button></td>
 					</tr>
-				`)
-				.join('');
+				`,
+          )
+          .join("");
 
-			document.querySelectorAll('button[data-add-id]').forEach((button) => {
-				button.addEventListener('click', () => addToCart(button.getAttribute('data-add-id')));
-			});
-		};
+        document.querySelectorAll("button[data-add-id]").forEach((button) => {
+          button.addEventListener("click", () =>
+            addToCart(button.getAttribute("data-add-id")),
+          );
+        });
+      };
 
-		const renderRecommendations = () => {
-			const picks = productState.slice(0, 3);
-			ui.recommendTableBody.innerHTML = picks
-				.map((item) => `
+      const renderRecommendations = () => {
+        const picks = productState.slice(0, 3);
+        ui.recommendTableBody.innerHTML = picks
+          .map(
+            (item) => `
 					<tr>
 						<td>${item.name}</td>
 						<td>${item.group}</td>
 						<td>${formatCurrency(item.price)}</td>
 						<td><button class="btn btn-primary" data-add-id="${item.id}" style="padding:4px 10px;">Thêm</button></td>
 					</tr>
-				`)
-				.join('');
+				`,
+          )
+          .join("");
 
-			document.querySelectorAll('#recommend-table-body button[data-add-id]').forEach((button) => {
-				button.addEventListener('click', () => {
-					addToCart(button.getAttribute('data-add-id'));
-					gotoSection('cart');
-				});
-			});
-		};
+        document
+          .querySelectorAll("#recommend-table-body button[data-add-id]")
+          .forEach((button) => {
+            button.addEventListener("click", () => {
+              addToCart(button.getAttribute("data-add-id"));
+              gotoSection("cart");
+            });
+          });
+      };
 
-		const addToCart = (productId) => {
-			const product = productState.find((item) => item.id === productId);
-			if (!product) return;
+      const addToCart = (productId) => {
+        const product = productState.find((item) => item.id === productId);
+        if (!product) return;
 
-			const existing = cartState.find((item) => item.id === productId);
-			if (existing) {
-				existing.qty += 1;
-			} else {
-				cartState.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
-			}
+        const existing = cartState.find((item) => item.id === productId);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cartState.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            qty: 1,
+          });
+        }
 
-			renderCart();
-		};
+        renderCart();
+        showToast("Đã thêm vào giỏ", `${product.name} đã được thêm.`);
+      };
 
-		const removeFromCart = (productId) => {
-			const index = cartState.findIndex((item) => item.id === productId);
-			if (index < 0) return;
-			cartState.splice(index, 1);
-			renderCart();
-		};
+      const removeFromCart = (productId) => {
+        const index = cartState.findIndex((item) => item.id === productId);
+        if (index < 0) return;
+        cartState.splice(index, 1);
+        renderCart();
+      };
 
-		const updateCartQty = (productId, qty) => {
-			const target = cartState.find((item) => item.id === productId);
-			if (!target) return;
-			target.qty = Math.max(1, Number(qty) || 1);
-			renderCart();
-		};
+      const updateCartQty = (productId, qty) => {
+        const target = cartState.find((item) => item.id === productId);
+        if (!target) return;
+        target.qty = Math.max(1, Number(qty) || 1);
+        renderCart();
+      };
 
-		const calculateTotals = () => {
-			const subtotal = cartState.reduce((sum, item) => sum + item.price * item.qty, 0);
-			const voucherCode = (ui.voucher.value || '').trim().toUpperCase();
-			const voucherDiscount = voucherCode === '4TL10' ? subtotal * 0.1 : 0;
-			const maxPointUse = Math.min(memberPoints, Math.floor(subtotal / 1000));
-			const inputPointUse = Math.max(0, Number(ui.points.value) || 0);
-			const pointUse = Math.min(maxPointUse, inputPointUse);
-			const pointDiscount = pointUse * 10;
-			const finalTotal = Math.max(0, subtotal - voucherDiscount - pointDiscount);
-			const cashPaid = Math.max(0, Number(ui.cash.value) || 0);
-			const change = Math.max(0, cashPaid - finalTotal);
-			return { subtotal, voucherDiscount, pointUse, pointDiscount, finalTotal, cashPaid, change };
-		};
+      const calculateTotals = () => {
+        const subtotal = cartState.reduce(
+          (sum, item) => sum + item.price * item.qty,
+          0,
+        );
+        const voucherCode = (ui.voucher.value || "").trim().toUpperCase();
+        const voucherDiscount = voucherCode === "4TL10" ? subtotal * 0.1 : 0;
+        const maxPointUse = Math.min(memberPoints, Math.floor(subtotal / 1000));
+        const inputPointUse = Math.max(0, Number(ui.points.value) || 0);
+        const pointUse = Math.min(maxPointUse, inputPointUse);
+        const pointDiscount = pointUse * 10;
+        const finalTotal = Math.max(
+          0,
+          subtotal - voucherDiscount - pointDiscount,
+        );
+        const cashPaid = Math.max(0, Number(ui.cash.value) || 0);
+        const change = Math.max(0, cashPaid - finalTotal);
+        return {
+          subtotal,
+          voucherDiscount,
+          pointUse,
+          pointDiscount,
+          finalTotal,
+          cashPaid,
+          change,
+        };
+      };
 
-		const renderCart = () => {
-			if (cartState.length === 0) {
-				ui.cartTableBody.innerHTML = '';
-				ui.cartEmptyNote.style.display = 'block';
-			} else {
-				ui.cartEmptyNote.style.display = 'none';
-				ui.cartTableBody.innerHTML = cartState
-					.map((item) => `
+      const renderCart = () => {
+        if (cartState.length === 0) {
+          ui.cartTableBody.innerHTML = "";
+          ui.cartEmptyNote.style.display = "block";
+        } else {
+          ui.cartEmptyNote.style.display = "none";
+          ui.cartTableBody.innerHTML = cartState
+            .map(
+              (item) => `
 						<tr>
 							<td>${item.name}</td>
 							<td><input type="number" min="1" value="${item.qty}" data-qty-id="${item.id}" style="width:64px;" /></td>
@@ -1123,163 +1509,360 @@
 							<td>${formatCurrency(item.qty * item.price)}</td>
 							<td><button class="btn btn-danger" data-remove-id="${item.id}" style="padding:4px 10px;">Xóa</button></td>
 						</tr>
-					`)
-					.join('');
+					`,
+            )
+            .join("");
 
-				document.querySelectorAll('input[data-qty-id]').forEach((input) => {
-					input.addEventListener('change', () => updateCartQty(input.getAttribute('data-qty-id'), input.value));
-				});
+          document.querySelectorAll("input[data-qty-id]").forEach((input) => {
+            input.addEventListener("change", () =>
+              updateCartQty(input.getAttribute("data-qty-id"), input.value),
+            );
+          });
 
-				document.querySelectorAll('button[data-remove-id]').forEach((button) => {
-					button.addEventListener('click', () => removeFromCart(button.getAttribute('data-remove-id')));
-				});
-			}
+          document
+            .querySelectorAll("button[data-remove-id]")
+            .forEach((button) => {
+              button.addEventListener("click", () =>
+                removeFromCart(button.getAttribute("data-remove-id")),
+              );
+            });
+        }
 
-			const totals = calculateTotals();
-			ui.totalSubtotal.textContent = formatCurrency(totals.subtotal);
-			ui.totalVoucher.textContent = `-${formatCurrency(totals.voucherDiscount)}`;
-			ui.totalPoints.textContent = `-${formatCurrency(totals.pointDiscount)}`;
-			ui.totalFinal.textContent = formatCurrency(totals.finalTotal);
-			ui.change.value = formatCurrency(totals.change);
-		};
+        const totals = calculateTotals();
+        ui.totalSubtotal.textContent = formatCurrency(totals.subtotal);
+        ui.totalVoucher.textContent = `-${formatCurrency(totals.voucherDiscount)}`;
+        ui.totalPoints.textContent = `-${formatCurrency(totals.pointDiscount)}`;
+        ui.totalFinal.textContent = formatCurrency(totals.finalTotal);
+        ui.change.value = formatCurrency(totals.change);
+      };
 
-		const renderInvoices = () => {
-			const transactionBySuffix = transactionState.reduce((acc, transaction) => {
-				const suffix = String(transaction.id || '').replace(/^GD/, '');
-				if (suffix) acc[suffix] = transaction;
-				return acc;
-			}, {});
+      const renderInvoices = () => {
+        const transactionBySuffix = transactionState.reduce(
+          (acc, transaction) => {
+            const suffix = String(transaction.id || "").replace(/^GD/, "");
+            if (suffix) acc[suffix] = transaction;
+            return acc;
+          },
+          {},
+        );
 
-			ui.invoiceTableBody.innerHTML = orderState
-				.map((order) => {
-					const suffix = String(order.id || '').replace(/^DH/, '');
-					const transaction = transactionBySuffix[suffix] || {};
-					const statusClass = order.status === 'Hoàn tất' ? 'success' : 'pending';
-					const purchasedProducts = order.products || `${order.items} sản phẩm`;
-					return `
+        ui.invoiceTableBody.innerHTML = orderState
+          .map((order) => {
+            const suffix = String(order.id || "").replace(/^DH/, "");
+            const transaction = transactionBySuffix[suffix] || {};
+            const statusClass =
+              order.status === "Hoàn tất" ? "success" : "pending";
+            const purchasedProducts =
+              order.products || `${order.items} sản phẩm`;
+            return `
 						<tr>
 							<td>${order.id}</td>
-							<td>${transaction.id || '-'}</td>
+							<td>${transaction.id || "-"}</td>
 							<td>${order.date}</td>
-							<td>${order.channel || transaction.channel || '-'}</td>
+							<td>${order.channel || transaction.channel || "-"}</td>
 							<td>${purchasedProducts}</td>
 							<td>${formatCurrency(order.total)}</td>
-							<td>${typeof transaction.paid === 'number' ? formatCurrency(transaction.paid) : '-'}</td>
-							<td>${typeof transaction.change === 'number' ? formatCurrency(transaction.change) : '-'}</td>
-							<td>${transaction.note || '-'}</td>
+							<td>${typeof transaction.paid === "number" ? formatCurrency(transaction.paid) : "-"}</td>
+							<td>${typeof transaction.change === "number" ? formatCurrency(transaction.change) : "-"}</td>
+							<td>${transaction.note || "-"}</td>
 							<td><span class="status-pill ${statusClass}">${order.status}</span></td>
 						</tr>
 					`;
-				})
-				.join('');
-		};
+          })
+          .join("");
+      };
 
-		const updateMemberInfo = () => {
-			ui.memberPointsDisplay.textContent = `${formatNumber(memberPoints)} điểm`;
-			ui.homePoints.textContent = formatNumber(memberPoints);
-		};
+      const updateMemberInfo = () => {
+        ui.memberPointsDisplay.textContent = `${formatNumber(memberPoints)} điểm`;
+        ui.homePoints.textContent = formatNumber(memberPoints);
 
-		document.getElementById('clear-filters').addEventListener('click', () => {
-			ui.searchName.value = '';
-			ui.searchBarcode.value = '';
-			ui.searchGroup.value = 'Tất cả';
-			ui.searchPrice.value = 'all';
-			renderCatalog();
-		});
+        if (ui.memberCode) {
+          ui.memberCode.textContent = `Thành viên: ${activeCustomer.id}`;
+        }
+        if (ui.memberName) {
+          ui.memberName.textContent = `${activeCustomer.name} • Hạng ${activeCustomer.tier}`;
+        }
+        if (ui.memberPhone) {
+          ui.memberPhone.textContent = `SĐT: ${activeCustomer.phone}`;
+        }
+        if (ui.memberEmail) {
+          ui.memberEmail.textContent = `Email: ${activeCustomer.email || "-"}`;
+        }
+        if (ui.topbarGreeting) {
+          const shortName =
+            activeCustomer.name.split(" ").slice(-1)[0] || activeCustomer.name;
+          ui.topbarGreeting.textContent = `Xin chào, ${shortName}`;
+        }
+      };
 
-		document.getElementById('search-now-btn').addEventListener('click', () => {
-			renderCatalog();
-		});
+      document.getElementById("clear-filters").addEventListener("click", () => {
+        ui.searchName.value = "";
+        ui.searchBarcode.value = "";
+        ui.searchGroup.value = "Tất cả";
+        ui.searchPrice.value = "all";
+        renderCatalog();
+      });
 
-		document.getElementById('go-to-cart').addEventListener('click', () => gotoSection('cart'));
-		document.getElementById('go-to-catalog').addEventListener('click', () => gotoSection('catalog'));
-		ui.buildOrderNoteBtn.addEventListener('click', buildOrderNoteFromQuickForm);
+      document
+        .getElementById("search-now-btn")
+        .addEventListener("click", () => {
+          renderCatalog();
+        });
 
-		['input', 'change'].forEach((eventName) => {
-			ui.searchName.addEventListener(eventName, renderCatalog);
-			ui.searchBarcode.addEventListener(eventName, renderCatalog);
-			ui.searchGroup.addEventListener(eventName, renderCatalog);
-			ui.searchPrice.addEventListener(eventName, renderCatalog);
-			ui.voucher.addEventListener(eventName, renderCart);
-			ui.points.addEventListener(eventName, renderCart);
-			ui.cash.addEventListener(eventName, renderCart);
-		});
+      document
+        .getElementById("go-to-cart")
+        .addEventListener("click", () => gotoSection("cart"));
+      document
+        .getElementById("go-to-catalog")
+        .addEventListener("click", () => gotoSection("catalog"));
+      ui.buildOrderNoteBtn.addEventListener(
+        "click",
+        buildOrderNoteFromQuickForm,
+      );
 
-		ui.channel.addEventListener('change', () => {
-			if (ui.channel.value === 'Mua tại cửa hàng') {
-				document.getElementById('checkout-method').value = 'Nhận tại cửa hàng';
-			} else {
-				document.getElementById('checkout-method').value = 'Giao tận nơi';
-			}
-		});
+      ["input", "change"].forEach((eventName) => {
+        ui.searchName.addEventListener(eventName, renderCatalog);
+        ui.searchBarcode.addEventListener(eventName, renderCatalog);
+        ui.searchGroup.addEventListener(eventName, renderCatalog);
+        ui.searchPrice.addEventListener(eventName, renderCatalog);
+        ui.voucher.addEventListener(eventName, renderCart);
+        ui.points.addEventListener(eventName, renderCart);
+        ui.cash.addEventListener(eventName, renderCart);
+      });
 
-		document.getElementById('clear-cart-btn').addEventListener('click', () => {
-			if (cartState.length === 0) return;
-			if (!confirm('Xác nhận xóa toàn bộ giỏ hàng?')) return;
-			cartState.splice(0, cartState.length);
-			renderCart();
-		});
+      ui.channel.addEventListener("change", () => {
+        if (ui.channel.value === "Mua tại cửa hàng") {
+          document.getElementById("checkout-method").value =
+            "Nhận tại cửa hàng";
+        } else {
+          document.getElementById("checkout-method").value = "Giao tận nơi";
+        }
+      });
 
-		document.getElementById('place-order-btn').addEventListener('click', () => {
-			if (cartState.length === 0) {
-				alert('Giỏ hàng đang trống. Vui lòng thêm sản phẩm trước khi đặt hàng.');
-				return;
-			}
+      document
+        .getElementById("clear-cart-btn")
+        .addEventListener("click", () => {
+          if (cartState.length === 0) return;
+          if (!confirm("Xác nhận xóa toàn bộ giỏ hàng?")) return;
+          cartState.splice(0, cartState.length);
+          renderCart();
+        });
 
-			const totals = calculateTotals();
-			if (ui.paymentType.value === 'Tiền mặt' && totals.cashPaid < totals.finalTotal) {
-				alert('Số tiền thanh toán chưa đủ để hoàn tất hóa đơn.');
-				return;
-			}
+      document
+        .getElementById("place-order-btn")
+        .addEventListener("click", () => {
+          if (cartState.length === 0) {
+            alert(
+              "Giỏ hàng đang trống. Vui lòng thêm sản phẩm trước khi đặt hàng.",
+            );
+            return;
+          }
 
-			if (!ui.orderNote.value.trim()) {
-				buildOrderNoteFromQuickForm();
-			}
+          const totals = calculateTotals();
+          if (
+            ui.paymentType.value === "Tiền mặt" &&
+            totals.cashPaid < totals.finalTotal
+          ) {
+            alert("Số tiền thanh toán chưa đủ để hoàn tất hóa đơn.");
+            return;
+          }
 
-			const orderCode = `DH${new Date().toISOString().slice(2, 10).replace(/-/g, '')}-${String(orderState.length + 53).padStart(3, '0')}`;
-			const transactionCode = `GD${orderCode.slice(2)}`;
-			const itemCount = cartState.reduce((sum, item) => sum + item.qty, 0);
-			const productsSummary = cartState
-				.map((item) => `${item.name} x${item.qty}`)
-				.join(', ');
+          if (!ui.orderNote.value.trim()) {
+            buildOrderNoteFromQuickForm();
+          }
 
-			orderState.unshift({
-				id: orderCode,
-				date: new Date().toLocaleString('vi-VN'),
-				channel: ui.channel.value,
-				items: itemCount,
-				products: productsSummary,
-				total: totals.finalTotal,
-				status: 'Đang xác nhận'
-			});
+          const orderCode = `DH${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${String(orderState.length + 53).padStart(3, "0")}`;
+          const transactionCode = `GD${orderCode.slice(2)}`;
+          const itemCount = cartState.reduce((sum, item) => sum + item.qty, 0);
+          const productsSummary = cartState
+            .map((item) => `${item.name} x${item.qty}`)
+            .join(", ");
 
-			transactionState.unshift({
-				id: transactionCode,
-				channel: ui.channel.value,
-				paid: totals.cashPaid,
-				change: totals.change,
-				note: (ui.orderNote.value || '').trim()
-			});
+          orderState.unshift({
+            id: orderCode,
+            date: new Date().toLocaleString("vi-VN"),
+            channel: ui.channel.value,
+            items: itemCount,
+            products: productsSummary,
+            total: totals.finalTotal,
+            status: "Đang xác nhận",
+          });
 
-			memberPoints = Math.max(0, memberPoints - totals.pointUse) + Math.floor(totals.finalTotal / 1000);
-			cartState.splice(0, cartState.length);
-			ui.voucher.value = '';
-			ui.points.value = 0;
-			ui.cash.value = 0;
-			ui.orderNote.value = '';
+          transactionState.unshift({
+            id: transactionCode,
+            channel: ui.channel.value,
+            paid: totals.cashPaid,
+            change: totals.change,
+            note: (ui.orderNote.value || "").trim(),
+          });
 
-			updateMemberInfo();
-			renderCart();
-			renderInvoices();
-			gotoSection('orders');
-			alert(`Đặt hàng thành công: ${orderCode}. Hóa đơn đã in và lưu giao dịch ${transactionCode}.`);
-		});
+          memberPoints =
+            Math.max(0, memberPoints - totals.pointUse) +
+            Math.floor(totals.finalTotal / 1000);
+          cartState.splice(0, cartState.length);
+          ui.voucher.value = "";
+          ui.points.value = 0;
+          ui.cash.value = 0;
+          ui.orderNote.value = "";
 
-		renderRecommendations();
-		renderCatalog();
-		renderCart();
-		renderInvoices();
-		updateMemberInfo();
-	</script>
-</body>
+          updateMemberInfo();
+          renderCart();
+          renderInvoices();
+          gotoSection("orders");
+          showToast("Đặt hàng thành công", `Đơn ${orderCode} đã được tạo.`);
+          alert(
+            `Đặt hàng thành công: ${orderCode}. Hóa đơn đã in và lưu giao dịch ${transactionCode}.`,
+          );
+        });
+
+      async function fetchSanPhamFromDB() {
+        try {
+          const response = await fetch("http://localhost:3000/api/sanpham");
+          if (!response.ok) {
+            throw new Error("Không thể tải danh sách sản phẩm từ DB.");
+          }
+          const data = await response.json();
+          // Clear current product state
+          productState.length = 0;
+          // Map DB to productState format
+          data.forEach((item) => {
+            productState.push({
+              id: item.MaSP,
+              barcode: item.Barcode || "",
+              image:
+                item.HinhAnhSP ||
+                "https://dummyimage.com/84x84/e0f2fe/1e3a8a.png&text=SP",
+              name: item.TenSP,
+              group: item.TenLoai || item.MaLoai || "Khác",
+              price: Number(item.GiaBan),
+              stock: Number(item.SoLuongTon),
+            });
+          });
+          console.log("Loaded products from DB:", productState);
+          renderRecommendations();
+          renderCatalog();
+        } catch (error) {
+          console.error("Lỗi khi fetch sản phẩm:", error);
+        }
+      }
+
+      async function fetchKhachHangFromDB() {
+        try {
+          const response = await fetch("http://localhost:3000/api/khachhang");
+          if (!response.ok) {
+            throw new Error("Không thể tải khách hàng từ DB.");
+          }
+          const customers = await response.json();
+          if (!Array.isArray(customers) || customers.length === 0) return;
+
+          const dbCustomer = customers[0];
+          activeCustomer = {
+            id: dbCustomer.MaKH || activeCustomer.id,
+            name: dbCustomer.TenKH || activeCustomer.name,
+            phone: dbCustomer.SDT || activeCustomer.phone,
+            email: dbCustomer.Email || activeCustomer.email,
+            points: Number(dbCustomer.DiemTichLuy) || activeCustomer.points,
+            tier:
+              (Number(dbCustomer.DiemTichLuy) || 0) >= 3000
+                ? "Gold"
+                : (Number(dbCustomer.DiemTichLuy) || 0) >= 1200
+                  ? "Silver"
+                  : "Thành viên",
+          };
+
+          memberPoints = activeCustomer.points;
+          updateMemberInfo();
+        } catch (error) {
+          console.error("Lỗi khi fetch khách hàng:", error);
+        }
+      }
+
+      async function fetchHoaDonFromDB() {
+        try {
+          const response = await fetch("http://localhost:3000/api/hoadon");
+          if (!response.ok) {
+            throw new Error("Không thể tải hóa đơn từ DB.");
+          }
+          const invoices = await response.json();
+          if (!Array.isArray(invoices) || invoices.length === 0) return;
+
+          orderState.splice(0, orderState.length);
+          transactionState.splice(0, transactionState.length);
+
+          invoices.forEach((invoice, index) => {
+            const id =
+              String(invoice.MaHD || "").trim() || `DH-DB-${index + 1}`;
+            const amount = Number(invoice.TongTien) || 0;
+            orderState.push({
+              id,
+              date: invoice.NgayLap
+                ? new Date(invoice.NgayLap).toLocaleString("vi-VN")
+                : "-",
+              channel: "Mua tại cửa hàng",
+              items: (invoice.SanPham || "").split(",").filter(Boolean).length,
+              products: invoice.SanPham || "-",
+              total: amount,
+              status: index === 0 ? "Đang xác nhận" : "Hoàn tất",
+            });
+
+            const suffix = id.startsWith("DH") ? id.slice(2) : id;
+            transactionState.push({
+              id: `GD${suffix}`,
+              channel: "Mua tại cửa hàng",
+              paid: amount,
+              change: 0,
+              note: invoice.HinhThucThanhToan || "-",
+            });
+          });
+
+          renderInvoices();
+        } catch (error) {
+          console.error("Lỗi khi fetch hóa đơn:", error);
+        }
+      }
+
+      function showToast(title, message) {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.innerHTML =
+          '<div class="toast-icon">✓</div>' +
+          '<div class="toast-content">' +
+          '<div class="toast-title">' +
+          title +
+          "</div>" +
+          '<div class="toast-message">' +
+          message +
+          "</div>" +
+          "</div>";
+        container.appendChild(toast);
+
+        requestAnimationFrame(() => {
+          toast.classList.add("show");
+        });
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      const adminBtn = document.getElementById("to-admin-btn");
+      if (adminBtn) {
+        adminBtn.addEventListener("click", () => {
+          window.location.href = "4TLnhanvien.html";
+        });
+      }
+
+      fetchSanPhamFromDB();
+      fetchKhachHangFromDB();
+      fetchHoaDonFromDB();
+      // renderRecommendations(); => Called in fetch
+      renderCatalog();
+      renderCart();
+      renderInvoices();
+      updateMemberInfo();
+    </script>
+  </body>
 </html>
